@@ -1,30 +1,36 @@
 <template>
-  <CardWrapper btn-body-class="col-lg-24">
-    <div class="row justify-content-center p-3">
-      <div class="d-flex justify-content-center bg-white wapper">
-        <div class="col-2">
-          <h4>EVENTS & ELEMENT FILE</h4>
-        </div>
-        <div class="col-10">
-          <div class="row">
-            <div class="col-10">
-              <input
+<!--  <CardWrapper btn-body-class="col-lg-24">-->
+<!--    <div class="row justify-content-center p-3">-->
+<!--    </div>-->
+<!--  </CardWrapper>-->
+  <CardWrapper>
+    <div class="d-flex align-items-center bg-white gap-3">
+      <div>
+        <span>EVENTS & ELEMENT FILE</span>
+      </div>
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center flex-wrap justify-content-between gap-2">
+          <div class="flex-grow-1">
+            <input
                 type="file"
                 class="form-control"
                 @change="handleFileChange"
-              />
-            </div>
-            <div class="col-2 justify-content-start d-flex">
-              <button
-                class="btn btn-primary btn-upload fw-bold"
+                id="fileUpload"
+            />
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button
+                class="btn btn-primary fw-bold"
                 @click="uploadFile"
-              >
-                CHOOSE FILE
-              </button>
-              <button class="btn btn-success fw-bold" @click="loadData">
-                LOAD
-              </button>
-            </div>
+            >
+              CHOOSE FILE
+            </button>
+            <button
+                class="btn btn-success fw-bold"
+                @click="loadData"
+            >
+              LOAD
+            </button>
           </div>
         </div>
       </div>
@@ -33,12 +39,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import {computed, ref} from "vue";
 import * as XLSX from "xlsx";
+import CardWrapper from "@/components/common/card/CardWrapper.vue";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
 const tableData = ref<string[][]>([]);
+
+const contentEvents = computed(() => {
+  return tableData.value.splice(1)
+})
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;

@@ -3,7 +3,6 @@
     <BreadCrumb>TOOL GEN TESTCASE UT</BreadCrumb>
     <div class="container-fluid load-content">
       <LoadFileContent></LoadFileContent>
-      <Content></Content>
     </div>
   </div>
 </template>
