@@ -1,0 +1,57 @@
+.breadcrumb {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    min-height: 4.375rem;
+    align-items: center;
+    font-size: 1.188rem;
+    font-weight: 600;
+    left: 0;
+    box-shadow: rgba(0, 0, 0, 0.14) 0px 1px 3px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.14) 0px 1px 3px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.14) 0px 1px 3px;
+    padding: 1.25rem !important;
+    background-color: #fff !important;
+}
+.container-fluid {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+    padding-right: calc(var(--bs-gutter-x)* 0.5);
+    padding-left: calc(var(--bs-gutter-x)* 0.5);
+    margin-right: auto;
+    margin-left: auto;
+    padding-top: 65px !important;
+}
+#app {
+    height: 100vh;
+    background: #f2f4f7;
+}
+.main {
+    background: #f2f4f7;
+}
+.btn-upload {
+    margin-right: 5px;
+  }
+  .wapper {
+    border-radius: 5px;
+    padding: 20px 10px;
+    border: 1px solid #fff;
+  }
+  .btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #f79009;
+    --bs-btn-border-color: #f79009;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #fdb022;
+    --bs-btn-hover-border-color: #fdb022;
+    --bs-btn-focus-shadow-rgb: 248, 161, 46;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #dc6803;
+    --bs-btn-active-border-color: #dc6803;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    --bs-btn-disabled-color: #98a2b3;
+    --bs-btn-disabled-bg: #e4e7ec;
+    --bs-btn-disabled-border-color: #475467;
+}
