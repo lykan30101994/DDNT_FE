@@ -2,7 +2,7 @@
   <div>
     <!-- Header -->
     <header class="bg-primary text-white text-center p-4">
-      <h1>Tool gen testcase UT</h1>
+      <h1 class="title">Tool gen testcase UT</h1>
     </header>
 
     <!-- Body -->
@@ -314,5 +314,8 @@ export default {
 .nav-tabs .nav-link.active {
   background-color: #007bff;
   color: white;
+}
+.title {
+  font-size: 17px !important;
 }
 </style>

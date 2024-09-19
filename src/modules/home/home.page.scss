@@ -55,3 +55,15 @@
     --bs-btn-disabled-bg: #e4e7ec;
     --bs-btn-disabled-border-color: #475467;
 }
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.content {
+    min-height: 100vh; 
+    padding-bottom: 60px;
+}

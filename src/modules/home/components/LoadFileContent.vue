@@ -5,7 +5,6 @@
         <div class="col-2">
           <h4>EVENTS & ELEMENT FILE</h4>
         </div>
-
         <div class="col-10">
           <div class="row">
             <div class="col-10">
@@ -69,11 +68,11 @@ const loadData = () => {
       if (jsonData.length > 0) {
         headers.value = jsonData[0] as string[];
         tableData.value = jsonData.slice(1) as string[][];
-        console.log(headers.value)
-        console.log(tableData.value)
+        console.log(headers.value);
+        console.log(tableData.value);
       }
     };
-   
+
     reader.readAsArrayBuffer(file.value);
   } else {
     alert("Please select a file to load data from.");
