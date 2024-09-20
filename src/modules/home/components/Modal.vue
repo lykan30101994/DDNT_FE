@@ -144,7 +144,7 @@
               </form>
             </div>
             <div v-else-if="activeTab === 'tab2'">
-              <p>Content for Tab 2</p>
+              <Abnormal />
             </div>
             <div v-else-if="activeTab === 'tab3'">
               <p>Content for Tab 3</p>
@@ -168,6 +168,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import Abnormal from "./abmormal/Abnormal.vue";
 
 const props = defineProps<{
   showModal: Boolean;

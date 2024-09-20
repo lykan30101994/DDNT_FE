@@ -6,18 +6,18 @@
       :index="index + 1"
     />
   </div>
-  <div class="d-flex justify-content-end">
+  <div class="text-end">
     <button class="btn btn-primary" @click="handleAddCase">ADD CASE</button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import TestCase from "./TestCase.vue";
 
 const props = withDefaults(
   defineProps<{
-    data: IDataItem[];
+    data?: IDataItem[];
   }>(),
   {
     data: () => [
@@ -37,12 +37,24 @@ const props = withDefaults(
   }
 );
 
+const emit = defineEmits<{
+  updateTestCase: [value: ITestCaseItem[]];
+}>();
+
 const dataSource = ref<IDataItem[]>(props.data);
 const listTestCase = ref<ITestCaseItem[]>([{}]);
 
 const handleAddCase = () => {
   listTestCase.value.push({} as ITestCaseItem);
 };
+
+watch(
+  () => listTestCase.value,
+  () => {
+    emit("updateTestCase", listTestCase.value);
+  },
+  { deep: true }
+);
 </script>
 
 <style lang="scss" scoped>
