@@ -8,22 +8,13 @@
         <div class="col-10">
           <div class="row">
             <div class="col-10">
-              <input
-                type="file"
-                class="form-control"
-                @change="handleFileChange"
-              />
+              <input type="file" class="form-control" @change="handleFileChange" />
             </div>
             <div class="col-2 justify-content-start d-flex">
-              <button
-                class="btn btn-primary btn-upload fw-bold"
-                @click="uploadFile"
-              >
+              <button class="btn btn-primary btn-upload fw-bold" @click="uploadFile">
                 CHOOSE FILE
               </button>
-              <button class="btn btn-success fw-bold" @click="loadData">
-                LOAD
-              </button>
+              <button class="btn btn-success fw-bold" @click="loadData">LOAD</button>
             </div>
           </div>
         </div>
@@ -33,12 +24,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import * as XLSX from "xlsx";
+import { TaskData } from '../types/TaskData.ts';
+
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
 const tableData = ref<string[][]>([]);
+
+const emit = defineEmits<{
+  (e: "data-uploaded", data: ref<TaskData[]>[]): void;
+}>();
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -64,28 +61,26 @@ const loadData = () => {
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
 
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 2 });
       if (jsonData.length > 0) {
         headers.value = jsonData[0] as string[];
         tableData.value = jsonData.slice(1) as string[][];
-        console.log(headers.value);
-        console.log(tableData.value);
+
+        const convertedData = tableData.value.map((item) => ({
+          no: item["#"],
+          task: item["EVENT"],
+          event: item["__EMPTY"],
+          element: item["__EMPTY_1"],
+          element_name: item["ELEMENT NAME"],
+        }));
+
+        emit("data-uploaded", convertedData);
       }
     };
 
     reader.readAsArrayBuffer(file.value);
   } else {
     alert("Please select a file to load data from.");
-  }
-};
-
-const parseData = (text: string) => {
-  const rows = text.split("\n");
-  if (rows.length > 0) {
-    headers.value = rows[0].split(",").map((header) => header.trim());
-    tableData.value = rows
-      .slice(1)
-      .map((row) => row.split(",").map((cell) => cell.trim()));
   }
 };
 </script>

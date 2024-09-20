@@ -1,7 +1,7 @@
 <template>
   <CardWrapper btn-body-class="col-lg-24">
     <div class="content">
-      
+      {{data}}
       <div class="row justify-content-center p-3">
         <div class="d-flex container bg-white wapper">
           <div class="flex-grow-1" style="margin: unset">
@@ -49,10 +49,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, defineProps  } from 'vue';
 import Footer from "./Footer.vue";
 import Modal from "./Modal.vue";
 const showModal = ref(false);
+
+const props = defineProps<{
+  data: any[];
+}>();
+
 const toggleModal = () => {
     showModal.value = !showModal.value;
 };
