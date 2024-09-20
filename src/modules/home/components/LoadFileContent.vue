@@ -31,7 +31,9 @@
     </div>
   </CardWrapper>
   <CardWrapper>
-    <Table title="sssss" :data="[]" :headers="[]"></Table>
+    <TableEvent title="showHidePassword - onclick - class::icon icon-eye password-indictor" :headers="headersForTable" :data="[
+        1,2,3,4,5
+    ]"/>
   </CardWrapper>
 </template>
 
@@ -39,12 +41,33 @@
 import {computed, ref} from "vue";
 import * as XLSX from "xlsx";
 import CardWrapper from "@/components/common/card/CardWrapper.vue";
-import Table from "@/components/common/table/Table.vue";
 import Label from "@/components/common/label/Label.vue";
+import TableEvent from "@/modules/home/components/table/TableEvent.vue";
+import type {IHeaderTable} from "@/components/common/table/header/TableHeader.type";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
 const tableData = ref<string[][]>([]);
+
+const headersForTable: IHeaderTable[][] = [
+    [
+      {
+        text: '#'
+      },
+      {
+        text: 'Category'
+      },
+      {
+        text: 'Type'
+      },
+      {
+        text: 'CElement'
+      },
+      {
+        text: 'Id / Name / Class'
+      }
+    ]
+]
 
 const contentEvents = computed(() => {
   return tableData.value.splice(1)

@@ -15,8 +15,8 @@
 withDefaults(
     defineProps<{
       title?: string;
-      cardBodyClass: string;
-      cardHeaderClass: string;
+      cardBodyClass?: string;
+      cardHeaderClass?: string;
     }>(),
     {
       cardBodyClass: '',

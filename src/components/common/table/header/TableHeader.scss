@@ -1,0 +1,8 @@
+@import '../../../common/Common';
+
+.my-header {
+  white-space: nowrap;
+  tr th {
+    background: $--header-table-bg;
+  }
+}
