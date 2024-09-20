@@ -39,7 +39,7 @@
           <td>
             <input
               v-model="formTestCase[item?.element_name]"
-              :disabled="!!modelCheckBox[`${item?.element_name}`]"
+              :disabled="!modelCheckBox[`${item?.element_name}`]"
               type="text"
               class="w-100 form-control"
             />
@@ -66,7 +66,7 @@ watch(
   () => modelCheckBox.value,
   (newVal) => {
     Object.keys(newVal).forEach((key) => {
-      if (newVal[key]) {
+      if (!newVal[key]) {
         formTestCase.value[key] = "";
       }
     });
@@ -76,5 +76,5 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@import "./abnormal.scss";
+@import "./FormTestCase.scss";
 </style>

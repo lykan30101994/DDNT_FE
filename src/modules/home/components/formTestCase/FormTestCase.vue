@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import TestCase from "./TestCase.vue";
+import TestCase from "./TestCaseItem.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -58,5 +58,5 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@import "./abnormal.scss";
+@import "./FormTestCase.scss";
 </style>

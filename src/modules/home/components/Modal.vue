@@ -144,10 +144,10 @@
               </form>
             </div>
             <div v-else-if="activeTab === 'tab2'">
-              <Abnormal />
+              <FormTestCase />
             </div>
             <div v-else-if="activeTab === 'tab3'">
-              <p>Content for Tab 3</p>
+              <FormTestCase />
             </div>
           </div>
           <div class="modal-footer">
@@ -168,7 +168,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Abnormal from "./abmormal/Abnormal.vue";
+import FormTestCase from "./formTestCase/FormTestCase.vue";
 
 const props = defineProps<{
   showModal: Boolean;
