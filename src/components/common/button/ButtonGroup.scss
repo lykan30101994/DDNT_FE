@@ -1,0 +1,24 @@
+.my-group-btn {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  .btn-group {
+    display: inline-block;
+  }
+}
+
+.my-btn-md {
+  min-width: 2rem;
+}
+
+.my-btn-sm {
+  min-width: 5rem;
+}
+
+.my-btn-lg {
+  min-width: 10rem;
+}
+
+.my-btn-xl {
+  min-width: 15rem;
+}

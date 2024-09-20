@@ -1,5 +1,5 @@
 <template>
-  <div class="card-wrapper">
+  <div :class="['card-wrapper', isFixed ? 'fixed-wrapper' : '']">
 
     <div v-if="title" :class="['card-header', cardHeaderClass]">
       <span>{{ title }}</span>
@@ -17,6 +17,7 @@ withDefaults(
       title?: string;
       cardBodyClass?: string;
       cardHeaderClass?: string;
+      isFixed?: boolean
     }>(),
     {
       cardBodyClass: '',
