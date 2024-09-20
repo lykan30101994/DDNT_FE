@@ -12,20 +12,17 @@
 
 <script lang="ts" setup>
 
-defineProps({
-  title: {
-    type: String,
-    required: false
-  },
-  cardBodyClass: {
-    type: String,
-    default: ''
-  },
-  cardHeaderClass: {
-    type: String,
-    default: ''
-  }
-});
+withDefaults(
+    defineProps<{
+      title?: string;
+      cardBodyClass: string;
+      cardHeaderClass: string;
+    }>(),
+    {
+      cardBodyClass: '',
+      cardHeaderClass: '',
+    }
+);
 </script>
 
 <style lang="scss" scoped>
