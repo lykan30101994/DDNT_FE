@@ -1,15 +1,9 @@
 <template>
-<!--  <CardWrapper btn-body-class="col-lg-24">-->
-<!--    <div class="row justify-content-center p-3">-->
-<!--    </div>-->
-<!--  </CardWrapper>-->
   <CardWrapper>
-    <div class="d-flex align-items-center bg-white gap-3">
-      <div>
-        <span>EVENTS & ELEMENT FILE</span>
-      </div>
+    <div class="auto-resize align-items-center bg-white gap-3">
+      <Label title="EVENTS & ELEMENT FILE"/>
       <div class="flex-grow-1">
-        <div class="d-flex align-items-center flex-wrap justify-content-between gap-2">
+        <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
           <div class="flex-grow-1">
             <input
                 type="file"
@@ -18,7 +12,7 @@
                 id="fileUpload"
             />
           </div>
-          <div class="d-flex justify-content-end gap-2">
+          <div class="auto-resize justify-content-end gap-2">
             <button
                 class="btn btn-primary fw-bold"
                 @click="uploadFile"
@@ -36,12 +30,17 @@
       </div>
     </div>
   </CardWrapper>
+  <CardWrapper>
+    <Table title="sssss" :data="[]" :headers="[]"></Table>
+  </CardWrapper>
 </template>
 
 <script setup lang="ts">
 import {computed, ref} from "vue";
 import * as XLSX from "xlsx";
 import CardWrapper from "@/components/common/card/CardWrapper.vue";
+import Table from "@/components/common/table/Table.vue";
+import Label from "@/components/common/label/Label.vue";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
@@ -103,4 +102,5 @@ const parseData = (text: string) => {
 
 <style lang="scss" scoped>
 @import "../home.page.scss";
+@import "../../../components/common/Common";
 </style>
