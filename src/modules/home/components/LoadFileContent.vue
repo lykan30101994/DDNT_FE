@@ -40,7 +40,7 @@
         1,2,3,4,5
     ]"/>
   </CardWrapper>
-  <CardWrapper>
+  <CardWrapper class="mb-3">
     <TableEvent title="showHidePassword - onclick - class::icon icon-eye password-indictor" :headers="headersForTable" :data="[
         1,2,3,4,5
     ]"/>
@@ -56,8 +56,8 @@ import * as XLSX from "xlsx";
 import CardWrapper from "@/components/common/card/CardWrapper.vue";
 import Label from "@/components/common/label/Label.vue";
 import TableEvent from "@/modules/home/components/table/TableEvent.vue";
-import type {IHeaderTable} from "@/components/common/table/header/TableHeader.type";
 import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
+import type {IHeaderTable} from "@/components/common/table/header/TableHeader.type";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
