@@ -1,4 +1,5 @@
 <template>
+  {{ mapEvent }}
   <CardWrapper>
     <div class="auto-resize align-items-center bg-white gap-3">
       <Label title="EVENTS & ELEMENT FILE"/>
@@ -30,23 +31,18 @@
       </div>
     </div>
   </CardWrapper>
-  <CardWrapper>
-    <TableEvent title="showHidePassword - onclick - class::icon icon-eye password-indictor" :headers="headersForTable" :data="[
-        1,2,3,4,5
-    ]"/>
-  </CardWrapper>
-  <CardWrapper>
-    <TableEvent title="showHidePassword - onclick - class::icon icon-eye password-indictor" :headers="headersForTable" :data="[
-        1,2,3,4,5
-    ]"/>
-  </CardWrapper>
-  <CardWrapper class="mb-3">
-    <TableEvent title="showHidePassword - onclick - class::icon icon-eye password-indictor" :headers="headersForTable" :data="[
-        1,2,3,4,5
-    ]"/>
+  <CardWrapper v-for="(events, key) in mapEvent" :key="key">
+    <template
+        v-for="event in events" :key="event.serial"
+    >
+      {{ event }}
+    </template>
   </CardWrapper>
   <CardWrapper :is-fixed="true">
-    <ButtonGroup align="end" :buttons="[{type: 'submit', label: 'VN', size: 'lg'},{type: 'cancel', label: 'Export Test cases', size: 'lg'}]"/>
+    <div class="d-flex group-item justify-content-end">
+      <DropDown v-model="selectedLanguage" label="Select Language" size="lg" :options="optionLanguage"/>
+      <ButtonGroup align="end" :buttons="buttonFooters"/>
+    </div>
   </CardWrapper>
 </template>
 
@@ -57,11 +53,17 @@ import CardWrapper from "@/components/common/card/CardWrapper.vue";
 import Label from "@/components/common/label/Label.vue";
 import TableEvent from "@/modules/home/components/table/TableEvent.vue";
 import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
+import {LANGUAGE} from "@/components/constant";
+import DropDown from "@/components/common/dropdown/DropDown.vue";
+import type {IButton} from "@/components/common/button/ButtonGroup.type";
 import type {IHeaderTable} from "@/components/common/table/header/TableHeader.type";
+import type {IOption} from "@/components/common/dropdown/DropDown.type";
+import type {ITableEvent} from "@/modules/home/home.type";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
 const tableData = ref<string[][]>([]);
+const selectedLanguage = ref<string | number>();
 
 const headersForTable: IHeaderTable[][] = [
     [
@@ -82,9 +84,56 @@ const headersForTable: IHeaderTable[][] = [
       }
     ]
 ]
+const optionLanguage: IOption[] = [
+  {
+    label: 'Vietnam',
+    value: LANGUAGE.VN
+  },
+  {
+    label: 'Japan',
+    value: LANGUAGE.JP
+  },
+  {
+    label: 'English',
+    value: LANGUAGE.EN
+  },
+]
+const buttonFooters: IButton[] = [
+    {
+      type: 'cancel',
+      label: 'Export Test cases',
+      size: 'lg',
+      btnClass: 'btn-primary',
+      isBold: true,
+      key: 'btn-2'
+    }
+]
 
 const contentEvents = computed(() => {
   return tableData.value.splice(1)
+})
+
+const mapEvent = computed(() => {
+  const map: Map<string, ITableEvent[]> = new Map()
+
+  contentEvents.value?.forEach(event => {
+    if (event && event.length >= 5) {
+      const key = `${event[1]} - ${event[2]} - ${event[3]}`
+      const records = map.get(key) || []
+
+      records.push({
+        serial: event[0],
+        category: event[1],
+        type: event[1],
+        c_element: event[2],
+        selector: event[3]
+      } as ITableEvent)
+
+      map.set(key, records)
+    }
+  })
+
+  return map
 })
 
 const handleFileChange = (event: Event) => {

@@ -1,7 +1,15 @@
 <template>
   <div :class="['my-group-btn', getAlignClass(align)]">
-    <div v-for="(button, index) in buttons" :key="index" class="btn-group">
-      <span :disabled="button.disabled ?? false" :class="['btn btn-primary', getSizeClass(button.size)]">
+    <div
+        v-for="(button, index) in buttons"
+        :key="index" class="btn-group">
+      <span v-if="button.isDropDown">
+        <DropDown :label="button.label" :options="button.option" :size="button.size"/>
+      </span>
+      <span
+          v-else
+          :disabled="button.disabled ?? false"
+          :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']">
         {{ button.label }}
       </span>
     </div>
@@ -10,6 +18,7 @@
 
 <script setup lang="ts">
 import type {IButton} from "./ButtonGroup.type.js";
+import DropDown from "@/components/common/dropdown/DropDown.vue";
 
 defineProps<{
   buttons: IButton[]
@@ -28,7 +37,7 @@ const getAlignClass = (align: string | undefined) => {
   return 'justify-content-' + alignClass
 }
 
-const getSizeClass = (size: string) => {
+const getSizeClass = (size: string | undefined) => {
   let sizeClass = 'my-btn-md'
 
   if (size === 'lg') {

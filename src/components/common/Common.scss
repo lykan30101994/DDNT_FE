@@ -5,3 +5,9 @@ $--header-table-color: white;
   display: flex;
   flex-wrap: wrap;
 }
+
+.group-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
