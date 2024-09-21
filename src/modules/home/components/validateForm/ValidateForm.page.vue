@@ -101,14 +101,14 @@ const arrChecked = ref(
 );
 
 const toggleInput = (index: number, type: string) => {
-  const ischecked = arrChecked.value;
+  const ischecked = arrChecked.value[index];
 
   if (type === "required") {
-    ischecked[index].isRequiredChecked = !ischecked[index].isRequiredChecked;
+    ischecked.isRequiredChecked = !ischecked.isRequiredChecked;
   } else if (type === "maxlength") {
-    ischecked[index].isMaxLengthChecked = !ischecked[index].isMaxLengthChecked;
+    ischecked.isMaxLengthChecked = !ischecked.isMaxLengthChecked;
   } else {
-    ischecked[index].isFormatChecked = !ischecked[index].isFormatChecked;
+    ischecked.isFormatChecked = !ischecked.isFormatChecked;
   }
 };
 </script>
