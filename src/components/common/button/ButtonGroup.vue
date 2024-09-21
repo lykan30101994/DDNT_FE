@@ -16,7 +16,7 @@ defineProps<{
   align?: string
 }>()
 
-const getAlignClass = (align: string) => {
+const getAlignClass = (align: string | undefined) => {
   let alignClass = 'start'
 
   if (align === 'end') {

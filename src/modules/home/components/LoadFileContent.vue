@@ -46,7 +46,7 @@
     ]"/>
   </CardWrapper>
   <CardWrapper :is-fixed="true">
-    <ButtonGroup align="end" :buttons="[{type: 'submit', label: 'Test', size: 'lg'},{type: 'cancel', label: 'Testw', size: 'lg'}]"/>
+    <ButtonGroup align="end" :buttons="[{type: 'submit', label: 'VN', size: 'lg'},{type: 'cancel', label: 'Export Test cases', size: 'lg'}]"/>
   </CardWrapper>
 </template>
 
