@@ -42,106 +42,7 @@
             </ul>
 
             <div v-if="activeTab === 'tab1'">
-              <form
-                class="row g-3 mt-2"
-                v-for="(row, index) in rows"
-                :key="index"
-              >
-                <h5>text::id::user_id</h5>
-                <div class="col-md-6">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      @click="toggleInput()"
-                    />
-                    <label class="form-check-label" for="invalidCheck2">
-                      REQUIRED
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <label for="validationDefault02" class="form-label"
-                    >DATA CHECK</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="validationDefault02"
-                    :disabled="!isChecked"
-                  />
-                </div>
-                <div class="col-md-2">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      id="invalidCheck2"
-                      @click="toggleInput()"
-                    />
-                    <label class="form-check-label" for="invalidCheck2">
-                      MAXLENGTH
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <label for="validationDefault01" class="form-label"
-                    >VALUE</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="validationDefault01"
-                    :disabled="!isChecked"
-                  />
-                </div>
-                <div class="col-md-6">
-                  <label for="validationDefault02" class="form-label"
-                    >DATA CHECK</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="validationDefault02"
-                    :disabled="!isChecked"
-                  />
-                </div>
-                <div class="col-md-2">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="invalidCheck2"
-                    />
-                    <label class="form-check-label" for="invalidCheck2">
-                      FORMAT
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <label for="validationDefault01" class="form-label"
-                    >VALUE</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="validationDefault01"
-                    value="50"
-                  />
-                </div>
-                <div class="col-md-6">
-                  <label for="validationDefault02" class="form-label"
-                    >DATA CHECK</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="validationDefault02"
-                    value="Test0001"
-                  />
-                </div>
-              </form>
+              <ValidateFrom :rows="rows"/>
             </div>
             <div v-else-if="activeTab === 'tab2'">
               <p>Content for Tab 2</p>
@@ -168,6 +69,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import ValidateFrom from "./validateForm/ValidateForm.page.vue"
 
 const props = defineProps<{
   showModal: Boolean;
@@ -175,7 +77,6 @@ const props = defineProps<{
 }>();
 
 const activeTab = ref("tab1");
-const isChecked = ref(false);
 const switchTab = (tab: string) => {
   activeTab.value = tab;
 };
@@ -184,10 +85,6 @@ const rows = ref([
   { type: "text", c_element: "id", name: "user_id" },
   { type: "password", c_element: "id", name: "password" },
 ]);
-
-const toggleInput = () => {
-  isChecked.value = !isChecked.value;
-};
 </script>
 
 <style scoped>
