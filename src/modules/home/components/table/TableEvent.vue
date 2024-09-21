@@ -1,13 +1,27 @@
 <template>
   <TableTitle :title="title"/>
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover">
+  <div class="table-responsive mb-2">
+    <table class="table table-bordered table-hover table-fixed">
       <TableHeader title="showHidePassword - onclick - class::icon icon-eye password-indictor" :headers="headers"/>
       <tbody>
-      <tr>
-        <td v-for="(item, index) in data" :key="index">
-          {{ item }}
-        </td>
+      <tr
+          v-for="(row, ind) in data"
+          :key="ind"
+      >
+        <template v-for="(field, index) in Object.keys(fieldTable)" :key="index">
+          <td
+              v-if="index === 0"
+              :class="fieldTable?.[field]"
+          >
+            {{ index + 1 }}
+          </td>
+          <td
+              v-else
+              :class="fieldTable?.[field]"
+          >
+            {{ row?.[field] }}
+          </td>
+        </template>
       </tr>
       </tbody>
     </table>
@@ -27,5 +41,10 @@ defineProps<{
   headers: IHeaderTable[][]
   data: ITableEvent[]
   title?: string
+  fieldTable: {[key: string] : string}
 }>()
 </script>
+
+<style lang="scss" scoped>
+@import "../../../home/home.page";
+</style>

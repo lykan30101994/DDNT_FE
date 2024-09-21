@@ -1,5 +1,4 @@
 <template>
-  {{ mapEvent }}
   <CardWrapper>
     <div class="auto-resize align-items-center bg-white gap-3">
       <Label title="EVENTS & ELEMENT FILE"/>
@@ -31,17 +30,29 @@
       </div>
     </div>
   </CardWrapper>
-  <CardWrapper v-for="(events, key) in mapEvent" :key="key">
-    <template
-        v-for="event in events" :key="event.serial"
-    >
-      {{ event }}
-    </template>
+  <CardWrapper
+      v-for="([key, value], index) in mapEvent.entries()"
+      :key="index" :class="index === mapEvent.size - 1 ? 'mb-3' : ''"
+  >
+    <TableEvent
+        :title="key"
+        :headers="headersForTable"
+        :data="value"
+        :field-table="fieldTable"
+    />
   </CardWrapper>
   <CardWrapper :is-fixed="true">
     <div class="d-flex group-item justify-content-end">
-      <DropDown v-model="selectedLanguage" label="Select Language" size="lg" :options="optionLanguage"/>
-      <ButtonGroup align="end" :buttons="buttonFooters"/>
+      <DropDown
+          v-model="selectedLanguage"
+          label="Select Language"
+          size="lg"
+          :options="optionLanguage"
+      />
+      <ButtonGroup
+          align="end"
+          :buttons="buttonFooters"
+      />
     </div>
   </CardWrapper>
 </template>
@@ -55,6 +66,7 @@ import TableEvent from "@/modules/home/components/table/TableEvent.vue";
 import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
 import {LANGUAGE} from "@/components/constant";
 import DropDown from "@/components/common/dropdown/DropDown.vue";
+import {useTable} from "@/components/utils/table-utils";
 import type {IButton} from "@/components/common/button/ButtonGroup.type";
 import type {IHeaderTable} from "@/components/common/table/header/TableHeader.type";
 import type {IOption} from "@/components/common/dropdown/DropDown.type";
@@ -68,19 +80,34 @@ const selectedLanguage = ref<string | number>();
 const headersForTable: IHeaderTable[][] = [
     [
       {
-        text: '#'
+        text: '#',
+        value: 'serial',
+        align: 'center',
+        width: 60
       },
       {
-        text: 'Category'
+        text: 'Category',
+        value: 'category',
+        align: 'start',
+        width: 200
       },
       {
-        text: 'Type'
+        text: 'Type',
+        value: 'type',
+        align: 'start',
+        width: 200
       },
       {
-        text: 'CElement'
+        text: 'CElement',
+        value: 'c_element',
+        align: 'start',
+        width: 200
       },
       {
-        text: 'Id / Name / Class'
+        text: 'Id / Name / Class',
+        value: 'selector',
+        align: 'start',
+        width: 200
       }
     ]
 ]
@@ -108,6 +135,8 @@ const buttonFooters: IButton[] = [
       key: 'btn-2'
     }
 ]
+
+const fieldTable = useTable(headersForTable)
 
 const contentEvents = computed(() => {
   return tableData.value.splice(1)

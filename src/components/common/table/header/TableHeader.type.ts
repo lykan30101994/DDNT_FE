@@ -3,4 +3,7 @@ export interface IHeaderTable {
     align?: string
     colSpan?: number
     rowSpan?: number
+    value?: string
+    width?: number
+    [key: string]: any
 }

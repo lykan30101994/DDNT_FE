@@ -4,4 +4,5 @@ export interface ITableEvent {
     type: string
     c_element: string
     selector: string
+    [key: string] : any
 }
