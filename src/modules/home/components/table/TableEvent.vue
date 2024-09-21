@@ -26,16 +26,18 @@
       </tbody>
     </table>
   </div>
-  <Button label="SELECT VIEW POINT" size="lg" btn-class="btn-danger"/>
+  <Button label="SELECT VIEW POINT" size="lg" btn-class="btn-danger" @click="toggleModal"/>
+  <Modal :showModal="showModal" :toggleModal="toggleModal" />
 </template>
 
 <script setup lang="ts">
-
+import {ref} from "vue";
 import type {IHeaderTable} from "../../../../components/common/table/header/TableHeader.type";
 import TableHeader from "../../../../components/common/table/header/TableHeader.vue";
 import TableTitle from "../../../../components/common/table/title/TableTitle.vue";
 import Button from "@/components/common/button/Button.vue";
 import type {ITableEvent} from "@/modules/home/home.type";
+import Modal from "@/modules/home/components/Modal.vue";
 
 defineProps<{
   headers: IHeaderTable[][]
@@ -43,6 +45,11 @@ defineProps<{
   title?: string
   fieldTable: {[key: string] : string}
 }>()
+
+const showModal = ref(false);
+const toggleModal = () => {
+  showModal.value = !showModal.value;
+};
 </script>
 
 <style lang="scss" scoped>

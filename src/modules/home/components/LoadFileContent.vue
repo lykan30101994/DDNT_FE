@@ -30,17 +30,7 @@
       </div>
     </div>
   </CardWrapper>
-  <CardWrapper
-      v-for="([key, value], index) in mapEvent.entries()"
-      :key="index" :class="index === mapEvent.size - 1 ? 'mb-3' : ''"
-  >
-    <TableEvent
-        :title="key"
-        :headers="headersForTable"
-        :data="value"
-        :field-table="fieldTable"
-    />
-  </CardWrapper>
+  <Content :map-event="mapEvent"/>
   <CardWrapper :is-fixed="true">
     <div class="d-flex group-item justify-content-end">
       <DropDown
@@ -62,55 +52,19 @@ import {computed, ref} from "vue";
 import * as XLSX from "xlsx";
 import CardWrapper from "@/components/common/card/CardWrapper.vue";
 import Label from "@/components/common/label/Label.vue";
-import TableEvent from "@/modules/home/components/table/TableEvent.vue";
 import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
 import {LANGUAGE} from "@/components/constant";
 import DropDown from "@/components/common/dropdown/DropDown.vue";
-import {useTable} from "@/components/utils/table-utils";
 import type {IButton} from "@/components/common/button/ButtonGroup.type";
-import type {IHeaderTable} from "@/components/common/table/header/TableHeader.type";
 import type {IOption} from "@/components/common/dropdown/DropDown.type";
 import type {ITableEvent} from "@/modules/home/home.type";
+import Content from "@/modules/home/components/Content.vue";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
 const tableData = ref<string[][]>([]);
 const selectedLanguage = ref<string | number>();
 
-const headersForTable: IHeaderTable[][] = [
-    [
-      {
-        text: '#',
-        value: 'serial',
-        align: 'center',
-        width: 60
-      },
-      {
-        text: 'Category',
-        value: 'category',
-        align: 'start',
-        width: 200
-      },
-      {
-        text: 'Type',
-        value: 'type',
-        align: 'start',
-        width: 200
-      },
-      {
-        text: 'CElement',
-        value: 'c_element',
-        align: 'start',
-        width: 200
-      },
-      {
-        text: 'Id / Name / Class',
-        value: 'selector',
-        align: 'start',
-        width: 200
-      }
-    ]
-]
 const optionLanguage: IOption[] = [
   {
     label: 'Vietnam',
@@ -136,8 +90,6 @@ const buttonFooters: IButton[] = [
     }
 ]
 
-const fieldTable = useTable(headersForTable)
-
 const contentEvents = computed(() => {
   return tableData.value.splice(1)
 })
@@ -149,13 +101,13 @@ const mapEvent = computed(() => {
     if (event && event.length >= 5) {
       const key = `${event[1]} - ${event[2]} - ${event[3]}`
       const records = map.get(key) || []
-
+      const selectors = event[4].split("::")
       records.push({
         serial: event[0],
         category: event[1],
-        type: event[1],
-        c_element: event[2],
-        selector: event[3]
+        type: selectors?.[0],
+        c_element: selectors?.[1],
+        selector: selectors?.[2]
       } as ITableEvent)
 
       map.set(key, records)
