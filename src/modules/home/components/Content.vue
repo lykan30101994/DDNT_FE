@@ -1,84 +1,7 @@
 <template>
   <CardWrapper btn-body-class="col-lg-24">
     <div class="content">
-      <div class="row justify-content-center p-3">
-        <div class="d-flex container bg-white wapper">
-          <div class="flex-grow-1" style="margin: unset">
-            <h5 class="text-left">doLogin - onclick - id::btn_login</h5>
-            <!-- Title for the table -->
-            <table class="table table-bordered mt-3">
-              <thead class="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Category</th>
-                  <th>Type</th>
-                  <th>CElement</th>
-                  <th>Id / Name / Class</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>input</td>
-                  <td>text</td>
-                  <td>id</td>
-                  <td>user_id</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>input</td>
-                  <td>password</td>
-                  <td>id</td>
-                  <td>password</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="text-left mt-3">
-              <button class="btn btn-primary">SELECT VIEW POINT</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-center p-3">
-        <div class="d-flex container bg-white wapper">
-          <div class="flex-grow-1" style="margin: unset">
-            <h5 class="text-left">doLogin - onclick - id::btn_login</h5>
-            <!-- Title for the table -->
-            <table class="table table-bordered mt-3">
-              <thead class="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Category</th>
-                  <th>Type</th>
-                  <th>CElement</th>
-                  <th>Id / Name / Class</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>input</td>
-                  <td>text</td>
-                  <td>id</td>
-                  <td>user_id</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>input</td>
-                  <td>password</td>
-                  <td>id</td>
-                  <td>password</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="text-left mt-3">
-              <button class="btn btn-primary">SELECT VIEW POINT</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      
       <div class="row justify-content-center p-3">
         <div class="d-flex container bg-white wapper">
           <div class="flex-grow-1" style="margin: unset">
@@ -112,45 +35,8 @@
               </tbody>
             </table>
             <div class="text-left mt-3">
-              <button class="btn btn-primary">SELECT VIEW POINT</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-center p-3">
-        <div class="d-flex container bg-white wapper">
-          <div class="flex-grow-1" style="margin: unset">
-            <h5 class="text-left">doLogin - onclick - id::btn_login</h5>
-            <!-- Title for the table -->
-            <table class="table table-bordered mt-3">
-              <thead class="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Category</th>
-                  <th>Type</th>
-                  <th>CElement</th>
-                  <th>Id / Name / Class</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>input</td>
-                  <td>text</td>
-                  <td>id</td>
-                  <td>user_id</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>input</td>
-                  <td>password</td>
-                  <td>id</td>
-                  <td>password</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="text-left mt-3">
-              <button class="btn btn-primary">SELECT VIEW POINT</button>
+              <button class="btn btn-primary" @click="toggleModal">SELECT VIEW POINT</button>
+              <Modal :showModal="showModal" :toggleModal="toggleModal" />
             </div>
           </div>
         </div>
@@ -163,7 +49,14 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import Footer from "./Footer.vue";
+import Modal from "./Modal.vue";
+const showModal = ref(false);
+const toggleModal = () => {
+    showModal.value = !showModal.value;
+};
+
 </script>
 
 <style lang="scss" scoped>
