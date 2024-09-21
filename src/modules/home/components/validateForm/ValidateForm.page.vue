@@ -1,14 +1,15 @@
 <template>
-  <form class="row g-3 mt-2" v-for="(row, index) in rows" :key="index">
-    <h5>{{ row.type }}::{{ row.c_element }}::{{ row.name }}</h5>
+  <form class="row g-3 mt-2" v-for="(row, index) in data" :key="index">
+    <h5>{{ row.type }}::{{ row.c_element }}::{{ row.selector }}</h5>
     <div class="col-md-6">
       <div class="form-check">
         <input
           class="form-check-input"
           type="checkbox"
+          id="invalidCheck1"
           @click="toggleInput(index, 'required')"
         />
-        <label class="form-check-label" for="invalidCheck2"> REQUIRED </label>
+        <label class="form-check-label" for="invalidCheck1"> REQUIRED </label>
       </div>
     </div>
     <div class="col-md-6">
@@ -54,21 +55,27 @@
         <input
           class="form-check-input"
           type="checkbox"
-          id="invalidCheck2"
+          id="invalidCheck3"
           @click="toggleInput(index, 'format')"
         />
-        <label class="form-check-label" for="invalidCheck2"> FORMAT </label>
+        <label class="form-check-label" for="invalidCheck3"> FORMAT </label>
       </div>
     </div>
     <div class="col-md-4">
       <label for="validationDefault01" class="form-label">VALUE</label>
-      <input
-        type="text"
+      <select
+        id="dropdown"
         class="form-control"
-        id="validationDefault01"
-        value="50"
         :disabled="arrChecked[index].isFormatChecked"
-      />
+      >
+        <option
+          v-for="option in options"
+          :key="option.value"
+          :value="option.value"
+        >
+          {{ option.text }}
+        </option>
+      </select>
     </div>
     <div class="col-md-6">
       <label for="validationDefault02" class="form-label">DATA CHECK</label>
@@ -85,17 +92,25 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import type { ITableEvent } from "@/modules/home/home.type";
 
 const props = defineProps<{
-    rows: Record<string, any>[];
+  data: ITableEvent[];
 }>();
 
+const options = ref([
+  { value: 0, text: "" },
+  { value: 1, text: "N N N" },
+  { value: 2, text: "999" },
+  { value: 3, text: "yyyy/mm/dd" },
+]);
+
 const arrChecked = ref(
-    props.rows.map((_, index) => {
+  props.data.map((_, index) => {
     return {
-      isRequiredChecked: false,
-      isMaxLengthChecked: false,
-      isFormatChecked: false,
+      isRequiredChecked: true,
+      isMaxLengthChecked: true,
+      isFormatChecked: true,
     };
   })
 );

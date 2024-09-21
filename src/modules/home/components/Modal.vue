@@ -42,7 +42,7 @@
             </ul>
 
             <div v-if="activeTab === 'tab1'">
-              <ValidateFrom :rows="rows"/>
+              <ValidateFrom :data="dataForm"/>
             </div>
             <div v-else-if="activeTab === 'tab2'">
               <FormTestCase />
@@ -71,10 +71,12 @@
 import { ref } from "vue";
 import FormTestCase from "./formTestCase/FormTestCase.vue";
 import ValidateFrom from "./validateForm/ValidateForm.page.vue"
+import type {ITableEvent} from "@/modules/home/home.type";
 
 const props = defineProps<{
   showModal: Boolean;
   toggleModal: () => void;
+  dataForm: ITableEvent[];
 }>();
 
 const activeTab = ref("tab1");

@@ -27,7 +27,7 @@
     </table>
   </div>
   <Button label="SELECT VIEW POINT" size="lg" btn-class="btn-danger" @click="toggleModal"/>
-  <Modal :showModal="showModal" :toggleModal="toggleModal" />
+  <Modal :showModal="showModal" :toggleModal="toggleModal" :data-form="data" />
 </template>
 
 <script setup lang="ts">
