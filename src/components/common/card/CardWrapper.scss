@@ -1,0 +1,21 @@
+.card-wrapper {
+  background: white;
+  margin-top: 1.25rem;
+  border-radius: 5px;
+  border: 1px solid white;
+}
+
+.card-header {
+  padding: 0.5rem 0 1rem 1rem;
+}
+
+.card-body {
+  padding: 1.25rem 3rem;
+}
+
+.fixed-wrapper {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+}

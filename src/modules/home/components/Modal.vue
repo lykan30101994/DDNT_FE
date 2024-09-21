@@ -45,10 +45,10 @@
               <ValidateFrom :rows="rows"/>
             </div>
             <div v-else-if="activeTab === 'tab2'">
-              <p>Content for Tab 2</p>
+              <FormTestCase />
             </div>
             <div v-else-if="activeTab === 'tab3'">
-              <p>Content for Tab 3</p>
+              <FormTestCase />
             </div>
           </div>
           <div class="modal-footer">
@@ -69,6 +69,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import FormTestCase from "./formTestCase/FormTestCase.vue";
 import ValidateFrom from "./validateForm/ValidateForm.page.vue"
 
 const props = defineProps<{

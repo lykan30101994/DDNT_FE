@@ -1,44 +1,121 @@
 <template>
-  <CardWrapper btn-body-class="col-lg-24">
-    <div class="row justify-content-center p-3">
-      <div class="d-flex justify-content-center bg-white wapper">
-        <div class="col-2">
-          <h4>EVENTS & ELEMENT FILE</h4>
-        </div>
-        <div class="col-10">
-          <div class="row">
-            <div class="col-10">
-              <input
+  <CardWrapper>
+    <div class="auto-resize align-items-center bg-white gap-3">
+      <Label title="EVENTS & ELEMENT FILE"/>
+      <div class="flex-grow-1">
+        <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
+          <div class="flex-grow-1">
+            <input
                 type="file"
                 class="form-control"
                 @change="handleFileChange"
-              />
-            </div>
-            <div class="col-2 justify-content-start d-flex">
-              <button
-                class="btn btn-primary btn-upload fw-bold"
+                id="fileUpload"
+            />
+          </div>
+          <div class="auto-resize justify-content-end gap-2">
+            <button
+                class="btn btn-primary fw-bold"
                 @click="uploadFile"
-              >
-                CHOOSE FILE
-              </button>
-              <button class="btn btn-success fw-bold" @click="loadData">
-                LOAD
-              </button>
-            </div>
+            >
+              CHOOSE FILE
+            </button>
+            <button
+                class="btn btn-success fw-bold"
+                @click="loadData"
+            >
+              LOAD
+            </button>
           </div>
         </div>
       </div>
     </div>
   </CardWrapper>
+  <Content :map-event="mapEvent"/>
+  <CardWrapper :is-fixed="true">
+    <div class="d-flex group-item justify-content-end">
+      <DropDown
+          v-model="selectedLanguage"
+          label="Select Language"
+          size="lg"
+          :options="optionLanguage"
+      />
+      <ButtonGroup
+          align="end"
+          :buttons="buttonFooters"
+      />
+    </div>
+  </CardWrapper>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import {computed, ref} from "vue";
 import * as XLSX from "xlsx";
+import CardWrapper from "@/components/common/card/CardWrapper.vue";
+import Label from "@/components/common/label/Label.vue";
+import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
+import {LANGUAGE} from "@/components/constant";
+import DropDown from "@/components/common/dropdown/DropDown.vue";
+import type {IButton} from "@/components/common/button/ButtonGroup.type";
+import type {IOption} from "@/components/common/dropdown/DropDown.type";
+import type {ITableEvent} from "@/modules/home/home.type";
+import Content from "@/modules/home/components/Content.vue";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
 const tableData = ref<string[][]>([]);
+const selectedLanguage = ref<string | number>();
+
+const optionLanguage: IOption[] = [
+  {
+    label: 'Vietnam',
+    value: LANGUAGE.VN
+  },
+  {
+    label: 'Japan',
+    value: LANGUAGE.JP
+  },
+  {
+    label: 'English',
+    value: LANGUAGE.EN
+  },
+]
+const buttonFooters: IButton[] = [
+    {
+      type: 'cancel',
+      label: 'Export Test cases',
+      size: 'lg',
+      btnClass: 'btn-primary',
+      isBold: true,
+      key: 'btn-2'
+    }
+]
+
+const contentEvents = computed(() => {
+  return tableData.value.splice(1)
+})
+
+const mapEvent = computed(() => {
+  const map: Map<string, ITableEvent[]> = new Map()
+
+  contentEvents.value?.forEach(event => {
+    if (event && event.length >= 5) {
+      const key = `${event[1]} - ${event[2]} - ${event[3]}`
+      const records = map.get(key) || []
+      const selectors = event[4].split("::")
+      records.push({
+        serial: event[0],
+        category: event[1],
+        type: selectors?.[0],
+        c_element: selectors?.[1],
+        selector: selectors?.[2]
+      } as ITableEvent)
+
+      map.set(key, records)
+    }
+  })
+
+  return map
+})
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -92,4 +169,5 @@ const parseData = (text: string) => {
 
 <style lang="scss" scoped>
 @import "../home.page.scss";
+@import "../../../components/common/Common";
 </style>
