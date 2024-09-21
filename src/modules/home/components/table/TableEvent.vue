@@ -13,7 +13,7 @@
               v-if="index === 0"
               :class="fieldTable?.[field]"
           >
-            {{ index + 1 }}
+            {{ ind + 1 }}
           </td>
           <td
               v-else
