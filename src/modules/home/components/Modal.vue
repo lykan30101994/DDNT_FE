@@ -42,13 +42,23 @@
             </ul>
 
             <div v-if="activeTab === 'tab1'">
-              <ValidateFrom :data="dataForm"/>
+              <ValidateFrom :data="dataForm" />
             </div>
             <div v-else-if="activeTab === 'tab2'">
-              <FormTestCase />
+              <FormTestCase
+                :type="ABNORMAL"
+                :data="dataForm"
+                :pattents="pattentTestCase[ABNORMAL]"
+                @update-pattent="handleUpdatePattent"
+              />
             </div>
             <div v-else-if="activeTab === 'tab3'">
-              <FormTestCase />
+              <FormTestCase
+                :type="NORMAL"
+                :data="dataForm"
+                :pattents="pattentTestCase[NORMAL]"
+                @update-pattent="handleUpdatePattent"
+              />
             </div>
           </div>
           <div class="modal-footer">
@@ -59,7 +69,7 @@
             >
               CANCEL
             </button>
-            <button type="submit" class="btn btn-primary">SAVE</button>
+            <button class="btn btn-primary" @click="save">SAVE</button>
           </div>
         </div>
       </div>
@@ -68,15 +78,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import FormTestCase from "./formTestCase/FormTestCase.vue";
-import ValidateFrom from "./validateForm/ValidateForm.page.vue"
-import type {ITableEvent} from "@/modules/home/home.type";
+import ValidateFrom from "./validateForm/ValidateForm.page.vue";
+import { CONSTANTS } from "@/components/constant";
+import { localStorageUtil } from "@/components/utils/local-storage-ultil";
+import type { IPattentTestCase, ITableEvent } from "@/modules/home/home.type";
 
 const props = defineProps<{
   showModal: Boolean;
-  toggleModal: () => void;
   dataForm: ITableEvent[];
+}>();
+
+const emit = defineEmits<{
+  toggleModal: [];
 }>();
 
 const activeTab = ref("tab1");
@@ -84,10 +99,76 @@ const switchTab = (tab: string) => {
   activeTab.value = tab;
 };
 
-const rows = ref([
-  { type: "text", c_element: "id", name: "user_id" },
-  { type: "password", c_element: "id", name: "password" },
-]);
+const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT);
+const fileLocalStorage = localStorageUtil(CONSTANTS.KEY_CURRENT_FILE);
+
+const category = props.dataForm?.[0]?.category;
+const { ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT;
+
+const fileCurrent = ref<string>(fileLocalStorage.get());
+const pattentTestCase = ref<IPattentTestCase>({});
+
+const handleUpdatePattent = (type: string, pattent: ITestCaseItem[]) => {
+  pattentTestCase.value = {
+    ...pattentTestCase.value,
+    [type]: pattent,
+  };
+};
+
+const save = () => {
+  const dataSave = convertBeforeSaveLocalStorage(pattentTestCase.value);
+  pattentLocalStorage.set(dataSave);
+  toggleModal();
+};
+
+const toggleModal = () => {
+  emit("toggleModal");
+};
+
+const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
+  const data = pattentLocalStorage.get()?.[fileCurrent.value] || {};
+
+  Object.keys(pattents).forEach((key) => {
+    pattents[key] = pattents[key].filter((item) => {
+      return Object.values(item).some((value) => value);
+    });
+  });
+
+  return {
+    [fileCurrent.value]: {
+      ...data,
+      [category]: {
+        ...pattents,
+      },
+    },
+  };
+};
+
+const convertFromLocalStorageToPattent = (pattents: any) => {
+  return pattents?.[fileCurrent.value]?.[category];
+};
+
+const initValue = () => {
+  const pattents = pattentLocalStorage.get();
+
+  if (pattents) {
+    pattentTestCase.value = {
+      ...convertFromLocalStorageToPattent(pattents),
+    };
+  }
+};
+
+watch(
+  () => props.showModal,
+  () => {
+    fileCurrent.value = fileLocalStorage.get();
+    initValue();
+  }
+);
+
+onMounted(() => {
+  initValue();
+});
 </script>
 
 <style scoped>
