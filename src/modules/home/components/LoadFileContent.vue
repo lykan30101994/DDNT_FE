@@ -30,7 +30,7 @@
       </div>
     </div>
   </CardWrapper>
-  <Content :map-event="mapEvent"/>
+  <Content :map-event="dataMapTable"/>
   <CardWrapper :is-fixed="true">
     <div class="d-flex group-item justify-content-end">
       <DropDown
@@ -48,13 +48,14 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import * as XLSX from "xlsx";
 import CardWrapper from "@/components/common/card/CardWrapper.vue";
 import Label from "@/components/common/label/Label.vue";
 import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
-import {LANGUAGE} from "@/components/constant";
 import DropDown from "@/components/common/dropdown/DropDown.vue";
+import {LANGUAGE} from "@/components/enum";
+import {CONSTANT} from "@/components/constant";
 import type {IButton} from "@/components/common/button/ButtonGroup.type";
 import type {IOption} from "@/components/common/dropdown/DropDown.type";
 import type {ITableEvent} from "@/modules/home/home.type";
@@ -64,6 +65,7 @@ const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
 const tableData = ref<string[][]>([]);
 const selectedLanguage = ref<string | number>();
+const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
 
 const optionLanguage: IOption[] = [
   {
@@ -138,6 +140,7 @@ const loadData = () => {
     reader.onload = (event) => {
       const data = new Uint8Array(event.target?.result as ArrayBuffer);
       const workbook = XLSX.read(data, { type: "array" });
+      console.log(workbook)
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
 
@@ -145,8 +148,6 @@ const loadData = () => {
       if (jsonData.length > 0) {
         headers.value = jsonData[0] as string[];
         tableData.value = jsonData.slice(1) as string[][];
-        console.log(headers.value);
-        console.log(tableData.value);
       }
     };
 
@@ -165,6 +166,26 @@ const parseData = (text: string) => {
       .map((row) => row.split(",").map((cell) => cell.trim()));
   }
 };
+
+const setDataFromLocalStorage = () => {
+  const dataFromStore =  localStorage.getItem(CONSTANT.KEY_LOCAL_STORAGE_DATA)
+  if (dataFromStore) {
+    const obj = JSON.parse(dataFromStore)
+    dataMapTable.value = new Map(Object.entries(obj))
+  }
+}
+
+watch(() => mapEvent.value, (newValue) => {
+  if (newValue) {
+    const obj = Object.fromEntries(newValue);
+    localStorage.setItem(CONSTANT.KEY_LOCAL_STORAGE_DATA, JSON.stringify(obj))
+    dataMapTable.value = newValue
+  }
+}, { deep: true })
+
+onMounted(() => {
+  setDataFromLocalStorage()
+})
 </script>
 
 <style lang="scss" scoped>

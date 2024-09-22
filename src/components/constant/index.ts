@@ -1,5 +1,4 @@
-export enum LANGUAGE {
-    VN = 0,
-    JP = 1,
-    EN = 2
+export const CONSTANT = {
+
+    KEY_LOCAL_STORAGE_DATA: 'data_event'
 }
