@@ -42,6 +42,7 @@
       <ButtonGroup
           align="end"
           :buttons="buttonFooters"
+          @click-button="handleClickBtn"
       />
     </div>
   </CardWrapper>
@@ -60,6 +61,8 @@ import type {IButton} from "@/components/common/button/ButtonGroup.type";
 import type {IOption} from "@/components/common/dropdown/DropDown.type";
 import type {ITableEvent} from "@/modules/home/home.type";
 import Content from "@/modules/home/components/Content.vue";
+import {ExcelUtils} from "@/components/utils/excel-utils";
+import {TEMPLATE} from "@/components/template/template";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
@@ -119,6 +122,10 @@ const mapEvent = computed(() => {
   return map
 })
 
+const handleClickBtn = (key: string) => {
+  writeToExcel()
+}
+
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length > 0) {
@@ -166,6 +173,33 @@ const parseData = (text: string) => {
       .map((row) => row.split(",").map((cell) => cell.trim()));
   }
 };
+
+const writeToExcel = () => {
+  const dataToSave = [
+    { Name: "John", Age: 30, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
+    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" }
+  ];
+
+  ExcelUtils.writeWithTemplate(TEMPLATE.TEST_CASE,
+      dataToSave, "excel-test.xlsx", "Sheet1", "*[A,B,C,D]")
+}
 
 const setDataFromLocalStorage = () => {
   const dataFromStore =  localStorage.getItem(CONSTANT.KEY_LOCAL_STORAGE_DATA)

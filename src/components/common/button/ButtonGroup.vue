@@ -2,12 +2,10 @@
   <div :class="['my-group-btn', getAlignClass(align)]">
     <div
         v-for="(button, index) in buttons"
-        :key="index" class="btn-group">
-      <span v-if="button.isDropDown">
-        <DropDown :label="button.label" :options="button.option" :size="button.size"/>
-      </span>
+        :key="index" class="btn-group"
+        @click="handleClick(button.key)"
+    >
       <span
-          v-else
           :disabled="button.disabled ?? false"
           :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']">
         {{ button.label }}
@@ -24,6 +22,14 @@ defineProps<{
   buttons: IButton[]
   align?: string
 }>()
+
+const emit = defineEmits<{
+  clickButton: [key: string]
+}>()
+
+const handleClick = (key: string) => {
+  emit("clickButton", key)
+}
 
 const getAlignClass = (align: string | undefined) => {
   let alignClass = 'start'
