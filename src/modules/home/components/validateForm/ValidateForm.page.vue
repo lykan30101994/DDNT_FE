@@ -122,7 +122,6 @@
         type="text"
         class="form-control"
         id="validationDefault02"
-        value="Test0001"
         :disabled="arrChecked[index].isFormatChecked"
       />
     </div>
