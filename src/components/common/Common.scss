@@ -1,0 +1,13 @@
+$--header-table-bg: #162432;
+$--header-table-color: white;
+
+.auto-resize {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.group-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
