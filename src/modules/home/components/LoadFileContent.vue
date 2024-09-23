@@ -46,13 +46,13 @@ import * as XLSX from "xlsx";
 import CardWrapper from "@/components/common/card/CardWrapper.vue";
 import Label from "@/components/common/label/Label.vue";
 import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
-import { CONSTANTS, LANGUAGE } from "@/components/constant";
 import DropDown from "@/components/common/dropdown/DropDown.vue";
+import Content from "@/modules/home/components/Content.vue";
+import { CONSTANTS, LANGUAGE } from "@/components/constant";
+import { localStorageUtil } from "@/components/utils/local-storage-ultil";
 import type { IButton } from "@/components/common/button/ButtonGroup.type";
 import type { IOption } from "@/components/common/dropdown/DropDown.type";
 import type { ITableEvent } from "@/modules/home/home.type";
-import Content from "@/modules/home/components/Content.vue";
-import { localStorageUtil } from "@/components/utils/local-storage-ultil";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
@@ -148,16 +148,6 @@ const loadData = () => {
     reader.readAsArrayBuffer(file.value);
   } else {
     alert("Please select a file to load data from.");
-  }
-};
-
-const parseData = (text: string) => {
-  const rows = text.split("\n");
-  if (rows.length > 0) {
-    headers.value = rows[0].split(",").map((header) => header.trim());
-    tableData.value = rows
-      .slice(1)
-      .map((row) => row.split(",").map((cell) => cell.trim()));
   }
 };
 </script>
