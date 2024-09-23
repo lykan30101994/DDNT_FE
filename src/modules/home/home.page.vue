@@ -8,10 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import BreadCrumb from "./components/BreadCrumb.vue";
-import LoadFileContent from "./components/LoadFileContent.vue";
+import BreadCrumb from './components/BreadCrumb.vue'
+import LoadFileContent from './components/LoadFileContent.vue'
 </script>
 
 <style lang="scss">
-@import "./home.page.scss";
+@import './home.page.scss';
 </style>

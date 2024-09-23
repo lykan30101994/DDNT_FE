@@ -1,15 +1,22 @@
 <template>
   <div :class="['my-group-btn', getAlignClass(align)]">
     <div
-        v-for="(button, index) in buttons"
-        :key="index" class="btn-group">
+      v-for="(button, index) in buttons"
+      :key="index"
+      class="btn-group"
+    >
       <span v-if="button.isDropDown">
-        <DropDown :label="button.label" :options="button.option" :size="button.size"/>
+        <DropDown
+          :label="button.label"
+          :options="button.option"
+          :size="button.size"
+        />
       </span>
       <span
-          v-else
-          :disabled="button.disabled ?? false"
-          :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']">
+        v-else
+        :disabled="button.disabled ?? false"
+        :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']"
+      >
         {{ button.label }}
       </span>
     </div>
@@ -17,8 +24,8 @@
 </template>
 
 <script setup lang="ts">
-import type {IButton} from "./ButtonGroup.type.js";
-import DropDown from "@/components/common/dropdown/DropDown.vue";
+import type { IButton } from './ButtonGroup.type.js'
+import DropDown from '@/components/common/dropdown/DropDown.vue'
 
 defineProps<{
   buttons: IButton[]
@@ -50,9 +57,8 @@ const getSizeClass = (size: string | undefined) => {
 
   return sizeClass
 }
-
 </script>
 
 <style lang="scss" scoped>
-@import "ButtonGroup";
+@import 'ButtonGroup';
 </style>

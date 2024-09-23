@@ -1,11 +1,11 @@
 <template>
-  <ButtonGroup :buttons="button"/>
+  <ButtonGroup :buttons="button" />
 </template>
 
 <script lang="ts" setup>
-import {computed} from "vue";
-import ButtonGroup from "./ButtonGroup.vue";
-import type {IButton} from "./ButtonGroup.type";
+import { computed } from 'vue'
+import ButtonGroup from './ButtonGroup.vue'
+import type { IButton } from './ButtonGroup.type'
 
 const props = defineProps<{
   type?: string
@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const button = computed(() => {
   const { type, label, btnClass, disabled, size } = props
-  const buttonObject : IButton = { type, label, btnClass, disabled, size, key: 'btn-1' }
-  return [ buttonObject ]
+  const buttonObject: IButton = { type, label, btnClass, disabled, size, key: 'btn-1' }
+  return [buttonObject]
 })
 </script>

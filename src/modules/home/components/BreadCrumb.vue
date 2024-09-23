@@ -9,9 +9,9 @@
 
 <script setup lang="ts">
 defineProps<{
-  breadcrumbClass?: string;
-}>();
+  breadcrumbClass?: string
+}>()
 </script>
 <style lang="scss">
-@import "../home.page.scss";
+@import '../home.page.scss';
 </style>

@@ -25,7 +25,11 @@
           </td>
           <td width="300px">* EXPECTED RESULT</td>
         </tr>
-        <tr v-for="(item, index) of data" :key="index" class="align-center">
+        <tr
+          v-for="(item, index) of data"
+          :key="index"
+          class="align-center"
+        >
           <td width="100px">
             <input
               v-model="modelCheckBox[getKeyInput(item)]"
@@ -52,58 +56,58 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue";
-import type { ITableEvent } from "../../home.type";
+import { onMounted, ref, watch } from 'vue'
+import type { ITableEvent } from '../../home.type'
 
 const props = defineProps<{
-  data: ITableEvent[];
-  index: number;
-}>();
+  data: ITableEvent[]
+  index: number
+}>()
 
-const pattentTestCase = defineModel({ default: {} as ITestCaseItem });
+const pattentTestCase = defineModel({ default: {} as ITestCaseItem })
 
-const modelCheckBox = ref<ITestCaseItem>({});
+const modelCheckBox = ref<ITestCaseItem>({})
 
 const getKeyInput = (item: ITableEvent) => {
-  return `${item.type}::${item.c_element}::${item.selector}`;
-};
+  return `${item.type}::${item.c_element}::${item.selector}`
+}
 
 const initCheckBox = () => {
   props.data?.forEach((item) => {
-    const key = getKeyInput(item);
+    const key = getKeyInput(item)
 
-    if (pattentTestCase.value[key] || pattentTestCase.value[key] === "") {
-      modelCheckBox.value[key] = true;
+    if (pattentTestCase.value[key] || pattentTestCase.value[key] === '') {
+      modelCheckBox.value[key] = true
     }
-  });
-};
+  })
+}
 
 watch(
   () => modelCheckBox.value,
   (newVal) => {
     Object.keys(newVal).forEach((key) => {
-      let isReset = false;
-      const valuePattent = pattentTestCase.value[key];
+      let isReset = false
+      const valuePattent = pattentTestCase.value[key]
 
       if (!newVal[key]) {
-        isReset = true;
+        isReset = true
       } else if (!valuePattent) {
-        isReset = true;
+        isReset = true
       }
 
       if (isReset) {
-        pattentTestCase.value[key] = "";
+        pattentTestCase.value[key] = ''
       }
-    });
+    })
   },
   { deep: true }
-);
+)
 
 onMounted(() => {
-  initCheckBox();
-});
+  initCheckBox()
+})
 </script>
 
 <style lang="scss" scoped>
-@import "./FormTestCase.scss";
+@import './FormTestCase.scss';
 </style>

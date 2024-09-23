@@ -5,12 +5,11 @@
 </template>
 
 <script setup lang="ts">
-
 defineProps<{
   title?: string
 }>()
 </script>
 
 <style lang="scss" scoped>
-@import "./TableTitle";
+@import './TableTitle';
 </style>
