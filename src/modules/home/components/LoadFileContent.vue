@@ -42,13 +42,14 @@
       <ButtonGroup
         align="end"
         :buttons="buttonFooters"
+        @on-click="handleExportTestCase"
       />
     </div>
   </CardWrapper>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import * as XLSX from 'xlsx'
 import CardWrapper from '@/components/common/card/CardWrapper.vue'
 import Label from '@/components/common/label/Label.vue'
@@ -59,12 +60,16 @@ import { CONSTANTS, LANGUAGE } from '@/components/constant'
 import { localStorageUtil } from '@/components/utils/local-storage-ultil'
 import type { IButton } from '@/components/common/button/ButtonGroup.type'
 import type { IOption } from '@/components/common/dropdown/DropDown.type'
-import type { ITableEvent } from '@/modules/home/home.type'
+import type { IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
+
+const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 
 const file = ref<File | null>(null)
 const headers = ref<string[]>([])
 const tableData = ref<string[][]>([])
 const selectedLanguage = ref<string | number>()
+
+const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 
 const optionLanguage: IOption[] = [
   {
@@ -136,8 +141,7 @@ const uploadFile = () => {
 
 const loadData = () => {
   if (file.value) {
-    const fileLocalStorage = localStorageUtil(CONSTANTS.KEY_CURRENT_FILE)
-    fileLocalStorage.set(file.value.name)
+    pattentLocalStorage.remove()
     const reader = new FileReader()
     reader.onload = (event) => {
       const data = new Uint8Array(event.target?.result as ArrayBuffer)
@@ -156,6 +160,65 @@ const loadData = () => {
   } else {
     alert('Please select a file to load data from.')
   }
+}
+
+const handleExportTestCase = () => {
+  const pattents = pattentLocalStorage.get()
+
+  if (pattents) {
+    const dataExport = convertLocalStorageToTestCase(pattents)
+    console.log(dataExport)
+  }
+}
+
+const convertLocalStorageToTestCase = (pattents: IPattentLocalStorage) => {
+  const arrTestCase = {} as IPattentLocalStorage
+  const pattentCombined = combine(pattents)
+
+  Object.keys(pattentCombined).forEach((key) => {
+    arrTestCase[key] = pattentCombined[key]?.map((item: ITestCaseItem) => {
+      return renderTestCase(item)
+    })
+  })
+
+  return arrTestCase
+}
+
+const combine = (pattents: IPattentLocalStorage) => {
+  const arrResult = { [NORMAL]: [], [ABNORMAL]: [] } as IPattentLocalStorage
+
+  Object.keys(pattents).forEach((key) => {
+    arrResult[NORMAL] = [...arrResult[NORMAL], ...pattents[key][NORMAL]]
+    arrResult[ABNORMAL] = [...arrResult[ABNORMAL], ...pattents[key][ABNORMAL]]
+  })
+
+  return arrResult
+}
+
+const renderTestCase = (input: any) => {
+  const { test_description, expected_result, action, action_element, ...inputs } = input
+
+  let stepCounter = 1
+  let testSteps = ''
+
+  for (const [key, value] of Object.entries(inputs)) {
+    const itemName = key.split('::')?.[2] ?? ''
+    testSteps += `Step ${stepCounter}: Nhập item ${itemName} là ${value}\n`
+    stepCounter++
+  }
+
+  testSteps += `Step ${stepCounter}: Click button ${action_element}\n`
+  stepCounter++
+
+  const result = {
+    purpose: test_description,
+    description: null,
+    pre_condition: null,
+    test_step: testSteps.trim(),
+    expected_result
+  }
+
+  return result
 }
 </script>
 

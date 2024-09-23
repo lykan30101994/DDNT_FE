@@ -8,6 +8,7 @@
       <span
         :disabled="button.disabled ?? false"
         :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']"
+        @click="handleClick"
       >
         {{ button.label }}
       </span>
@@ -17,11 +18,14 @@
 
 <script setup lang="ts">
 import type { IButton } from './ButtonGroup.type.js'
-import DropDown from '@/components/common/dropdown/DropDown.vue'
 
 defineProps<{
   buttons: IButton[]
   align?: string
+}>()
+
+const emit = defineEmits<{
+  onClick: [e: Event]
 }>()
 
 const getAlignClass = (align: string | undefined) => {
@@ -48,6 +52,10 @@ const getSizeClass = (size: string | undefined) => {
   }
 
   return sizeClass
+}
+
+const handleClick = (e: Event) => {
+  emit('onClick', e)
 }
 </script>
 

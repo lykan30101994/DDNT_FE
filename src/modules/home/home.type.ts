@@ -12,3 +12,15 @@ export interface ITableEvent {
 export interface IPattentTestCase {
   [key: string]: ITestCaseItem[]
 }
+
+export interface IPattentLocalStorage {
+  [key: string]: any
+}
+
+export interface ITestCaseResult {
+  purpose: string
+  description?: string
+  pre_condition?: string
+  test_step: string
+  expected_result: string
+}

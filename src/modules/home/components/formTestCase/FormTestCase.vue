@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import TestCase from './TestCaseItem.vue'
 import type { ITableEvent } from '../../home.type'
 
@@ -39,8 +39,17 @@ const emit = defineEmits<{
   updatePattent: [type: string, value: ITestCaseItem[]]
 }>()
 
+const initModel = computed(() => {
+  return [
+    {
+      action: props.data[0].action,
+      action_element: props.data[0].action_element
+    }
+  ] as ITestCaseItem[]
+})
+
 const dataSource = ref<ITableEvent[]>(props.data)
-const listPattent = ref<ITestCaseItem[]>(props.pattents || ([{}] as ITestCaseItem[]))
+const listPattent = ref<ITestCaseItem[]>(props.pattents || initModel.value)
 
 const handleAddCase = () => {
   listPattent.value.push({} as ITestCaseItem)
