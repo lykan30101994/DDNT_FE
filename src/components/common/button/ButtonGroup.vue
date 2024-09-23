@@ -2,18 +2,10 @@
   <div :class="['my-group-btn', getAlignClass(align)]">
     <div
       v-for="(button, index) in buttons"
-      :key="index"
       class="btn-group"
+      :key="index"
     >
-      <span v-if="button.isDropDown">
-        <DropDown
-          :label="button.label"
-          :options="button.option"
-          :size="button.size"
-        />
-      </span>
       <span
-        v-else
         :disabled="button.disabled ?? false"
         :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']"
       >

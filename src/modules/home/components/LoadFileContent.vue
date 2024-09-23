@@ -8,8 +8,8 @@
             <input
               type="file"
               class="form-control"
-              @change="handleFileChange"
               id="fileUpload"
+              @change="handleFileChange"
             />
           </div>
           <div class="auto-resize justify-content-end gap-2">

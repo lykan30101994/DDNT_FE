@@ -27,8 +27,8 @@
         </tr>
         <tr
           v-for="(item, index) of data"
-          :key="index"
           class="align-center"
+          :key="index"
         >
           <td width="100px">
             <input
@@ -43,9 +43,9 @@
           <td>
             <input
               v-model="pattentTestCase[getKeyInput(item)]"
-              :disabled="!modelCheckBox[getKeyInput(item)]"
               type="text"
               class="w-100 form-control"
+              :disabled="!modelCheckBox[getKeyInput(item)]"
             />
           </td>
           <td width="300px"></td>
