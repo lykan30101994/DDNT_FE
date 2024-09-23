@@ -1,28 +1,24 @@
 <template>
   <CardWrapper>
     <div class="auto-resize align-items-center bg-white gap-3">
-      <Label title="EVENTS & ELEMENT FILE"/>
+      <Label title="EVENTS & ELEMENT FILE" />
       <div class="flex-grow-1">
-        <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
+        <div
+          class="auto-resize align-items-center flex-wrap justify-content-between gap-2"
+        >
           <div class="flex-grow-1">
             <input
-                type="file"
-                class="form-control"
-                @change="handleFileChange"
-                id="fileUpload"
+              type="file"
+              class="form-control"
+              @change="handleFileChange"
+              id="fileUpload"
             />
           </div>
           <div class="auto-resize justify-content-end gap-2">
-            <button
-                class="btn btn-primary fw-bold"
-                @click="uploadFile"
-            >
+            <button class="btn btn-primary fw-bold" @click="uploadFile">
               CHOOSE FILE
             </button>
-            <button
-                class="btn btn-success fw-bold"
-                @click="loadData"
-            >
+            <button class="btn btn-success fw-bold" @click="loadData">
               LOAD
             </button>
           </div>
@@ -30,35 +26,33 @@
       </div>
     </div>
   </CardWrapper>
-  <Content :map-event="mapEvent"/>
+  <Content :map-event="mapEvent" />
   <CardWrapper :is-fixed="true">
     <div class="d-flex group-item justify-content-end">
       <DropDown
-          v-model="selectedLanguage"
-          label="Select Language"
-          size="lg"
-          :options="optionLanguage"
+        v-model="selectedLanguage"
+        label="Select Language"
+        size="lg"
+        :options="optionLanguage"
       />
-      <ButtonGroup
-          align="end"
-          :buttons="buttonFooters"
-      />
+      <ButtonGroup align="end" :buttons="buttonFooters" />
     </div>
   </CardWrapper>
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import { computed, ref } from "vue";
 import * as XLSX from "xlsx";
 import CardWrapper from "@/components/common/card/CardWrapper.vue";
 import Label from "@/components/common/label/Label.vue";
 import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
-import {LANGUAGE} from "@/components/constant";
+import { CONSTANTS, LANGUAGE } from "@/components/constant";
 import DropDown from "@/components/common/dropdown/DropDown.vue";
-import type {IButton} from "@/components/common/button/ButtonGroup.type";
-import type {IOption} from "@/components/common/dropdown/DropDown.type";
-import type {ITableEvent} from "@/modules/home/home.type";
+import type { IButton } from "@/components/common/button/ButtonGroup.type";
+import type { IOption } from "@/components/common/dropdown/DropDown.type";
+import type { ITableEvent } from "@/modules/home/home.type";
 import Content from "@/modules/home/components/Content.vue";
+import { localStorageUtil } from "@/components/utils/local-storage-ultil";
 
 const file = ref<File | null>(null);
 const headers = ref<string[]>([]);
@@ -67,55 +61,56 @@ const selectedLanguage = ref<string | number>();
 
 const optionLanguage: IOption[] = [
   {
-    label: 'Vietnam',
-    value: LANGUAGE.VN
+    label: "Vietnam",
+    value: LANGUAGE.VN,
   },
   {
-    label: 'Japan',
-    value: LANGUAGE.JP
+    label: "Japan",
+    value: LANGUAGE.JP,
   },
   {
-    label: 'English',
-    value: LANGUAGE.EN
+    label: "English",
+    value: LANGUAGE.EN,
   },
-]
+];
 const buttonFooters: IButton[] = [
-    {
-      type: 'cancel',
-      label: 'Export Test cases',
-      size: 'lg',
-      btnClass: 'btn-primary',
-      isBold: true,
-      key: 'btn-2'
-    }
-]
+  {
+    type: "cancel",
+    label: "Export Test cases",
+    size: "lg",
+    btnClass: "btn-primary",
+    isBold: true,
+    key: "btn-2",
+  },
+];
 
 const contentEvents = computed(() => {
-  return tableData.value.splice(1)
-})
+  return tableData.value.splice(1);
+});
 
 const mapEvent = computed(() => {
-  const map: Map<string, ITableEvent[]> = new Map()
-
-  contentEvents.value?.forEach(event => {
+  const map: Map<string, ITableEvent[]> = new Map();
+  contentEvents.value?.forEach((event) => {
     if (event && event.length >= 5) {
-      const key = `${event[1]} - ${event[2]} - ${event[3]}`
-      const records = map.get(key) || []
-      const selectors = event[4].split("::")
+      const key = `${event[1]} - ${event[2]} - ${event[3]}`;
+      const records = map.get(key) || [];
+      const selectors = event[4].split("::");
       records.push({
-        serial: event[0],
+        serial: Number.parseInt(event[0]),
         category: event[1],
         type: selectors?.[0],
         c_element: selectors?.[1],
-        selector: selectors?.[2]
-      } as ITableEvent)
+        selector: selectors?.[2],
+        action: event?.[2],
+        action_element: event?.[3],
+      } as ITableEvent);
 
-      map.set(key, records)
+      map.set(key, records);
     }
-  })
+  });
 
-  return map
-})
+  return map;
+});
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -134,6 +129,8 @@ const uploadFile = () => {
 
 const loadData = () => {
   if (file.value) {
+    const fileLocalStorage = localStorageUtil(CONSTANTS.KEY_CURRENT_FILE);
+    fileLocalStorage.set(file.value.name);
     const reader = new FileReader();
     reader.onload = (event) => {
       const data = new Uint8Array(event.target?.result as ArrayBuffer);
@@ -145,8 +142,6 @@ const loadData = () => {
       if (jsonData.length > 0) {
         headers.value = jsonData[0] as string[];
         tableData.value = jsonData.slice(1) as string[][];
-        console.log(headers.value);
-        console.log(tableData.value);
       }
     };
 

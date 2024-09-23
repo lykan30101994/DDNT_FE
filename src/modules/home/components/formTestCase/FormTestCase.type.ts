@@ -1,5 +1,5 @@
 interface ITestCaseItem {
-    [key: string]: string;
+    [key: string]: string | boolean;
 }
 
 interface IDataItem {
