@@ -40,35 +40,35 @@
         :options="optionLanguage"
       />
       <ButtonGroup
-          align="end"
-          :buttons="buttonFooters"
-          @click-button="handleClickBtn"
+        align="end"
+        :buttons="buttonFooters"
+        @click-button="handleClickBtn"
       />
     </div>
   </CardWrapper>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
-import * as XLSX from "xlsx";
-import CardWrapper from "@/components/common/card/CardWrapper.vue";
-import Label from "@/components/common/label/Label.vue";
-import ButtonGroup from "@/components/common/button/ButtonGroup.vue";
-import DropDown from "@/components/common/dropdown/DropDown.vue";
-import {LANGUAGE} from "@/components/enum";
-import {CONSTANTS} from "@/components/constant";
-import type {IButton} from "@/components/common/button/ButtonGroup.type";
-import type {IOption} from "@/components/common/dropdown/DropDown.type";
-import type {ITableEvent} from "@/modules/home/home.type";
-import {localStorageUtil} from "@/components/utils/local-storage-ultil";
-import Content from "@/modules/home/components/Content.vue";
-import {ExcelUtils} from "@/components/utils/excel-utils";
-import {TEMPLATE} from "@/components/template/template";
+import { computed, onMounted, ref, watch } from 'vue'
+import * as XLSX from 'xlsx'
+import CardWrapper from '@/components/common/card/CardWrapper.vue'
+import Label from '@/components/common/label/Label.vue'
+import ButtonGroup from '@/components/common/button/ButtonGroup.vue'
+import DropDown from '@/components/common/dropdown/DropDown.vue'
+import { LANGUAGE } from '@/components/enum'
+import { CONSTANTS } from '@/components/constant'
+import type { IButton } from '@/components/common/button/ButtonGroup.type'
+import type { IOption } from '@/components/common/dropdown/DropDown.type'
+import type { ITableEvent } from '@/modules/home/home.type'
+import { localStorageUtil } from '@/components/utils/local-storage-ultil'
+import Content from '@/modules/home/components/Content.vue'
+import { ExcelUtils } from '@/components/utils/excel-utils'
+import { TEMPLATE } from '@/components/template/template'
 
-const file = ref<File | null>(null);
-const headers = ref<string[]>([]);
-const tableData = ref<string[][]>([]);
-const selectedLanguage = ref<string | number>();
+const file = ref<File | null>(null)
+const headers = ref<string[]>([])
+const tableData = ref<string[][]>([])
+const selectedLanguage = ref<string | number>()
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
 
 const optionLanguage: IOption[] = [
@@ -169,46 +169,49 @@ const loadData = () => {
 
 const writeToExcel = () => {
   const dataToSave = [
-    { Name: "John", Age: 30, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" },
-    { Name: "Jane", Age: 25, Mark: 10, Phone: "09999" }
-  ];
+    { Name: 'John', Age: 30, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' },
+    { Name: 'Jane', Age: 25, Mark: 10, Phone: '09999' }
+  ]
 
-  ExcelUtils.writeWithTemplate(TEMPLATE.TEST_CASE,
-      dataToSave, "excel-test.xlsx", "Sheet1", "*[A,B,C,D]")
+  ExcelUtils.writeWithTemplate(TEMPLATE.TEST_CASE, dataToSave, 'excel-test.xlsx', 'Sheet1', '*[A,B,C,D]')
 }
 
 const setDataFromLocalStorage = () => {
-  const dataFromStore =  localStorage.getItem(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
+  const dataFromStore = localStorage.getItem(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
   if (dataFromStore) {
     const obj = JSON.parse(dataFromStore)
     dataMapTable.value = new Map(Object.entries(obj))
   }
 }
 
-watch(() => mapEvent.value, (newValue) => {
-  if (newValue) {
-    const obj = Object.fromEntries(newValue);
-    localStorage.setItem(CONSTANTS.KEY_LOCAL_STORAGE_DATA, JSON.stringify(obj))
-    dataMapTable.value = newValue
-  }
-}, { deep: true })
+watch(
+  () => mapEvent.value,
+  (newValue) => {
+    if (newValue) {
+      const obj = Object.fromEntries(newValue)
+      localStorage.setItem(CONSTANTS.KEY_LOCAL_STORAGE_DATA, JSON.stringify(obj))
+      dataMapTable.value = newValue
+    }
+  },
+  { deep: true }
+)
 
 onMounted(() => {
   setDataFromLocalStorage()

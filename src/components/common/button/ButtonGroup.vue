@@ -1,13 +1,15 @@
 <template>
   <div :class="['my-group-btn', getAlignClass(align)]">
     <div
-        v-for="(button, index) in buttons"
-        :key="index" class="btn-group"
-        @click="handleClick(button.key)"
+      v-for="(button, index) in buttons"
+      :key="index"
+      class="btn-group"
+      @click="handleClick(button.key)"
     >
       <span
-          :disabled="button.disabled ?? false"
-          :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']">
+        :disabled="button.disabled ?? false"
+        :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']"
+      >
         {{ button.label }}
       </span>
     </div>
@@ -15,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import type {IButton} from "./ButtonGroup.type.js";
+import type { IButton } from './ButtonGroup.type.js'
 
 defineProps<{
   buttons: IButton[]
@@ -27,7 +29,7 @@ const emit = defineEmits<{
 }>()
 
 const handleClick = (key: string) => {
-  emit("clickButton", key)
+  emit('clickButton', key)
 }
 
 const getAlignClass = (align: string | undefined) => {
