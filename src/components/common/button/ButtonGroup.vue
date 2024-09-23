@@ -16,7 +16,6 @@
 
 <script setup lang="ts">
 import type {IButton} from "./ButtonGroup.type.js";
-import DropDown from "@/components/common/dropdown/DropDown.vue";
 
 defineProps<{
   buttons: IButton[]
@@ -56,9 +55,8 @@ const getSizeClass = (size: string | undefined) => {
 
   return sizeClass
 }
-
 </script>
 
 <style lang="scss" scoped>
-@import "ButtonGroup";
+@import 'ButtonGroup';
 </style>

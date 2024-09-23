@@ -1,62 +1,60 @@
 <template>
-  <div v-for="(testCase, index) of listTestCase" :key="index">
+  <div
+    v-for="(testCase, index) of listPattent"
+    :key="index"
+  >
     <TestCase
-      v-model="listTestCase[index]"
+      v-model="listPattent[index]"
       :data="dataSource"
       :index="index + 1"
     />
   </div>
   <div class="text-end">
-    <button class="btn btn-primary" @click="handleAddCase">ADD CASE</button>
+    <button
+      class="btn btn-primary"
+      @click="handleAddCase"
+    >
+      ADD CASE
+    </button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
-import TestCase from "./TestCaseItem.vue";
+import { ref, watch } from 'vue'
+import TestCase from './TestCaseItem.vue'
+import type { ITableEvent } from '../../home.type'
 
 const props = withDefaults(
   defineProps<{
-    data?: IDataItem[];
+    type: string
+    data?: ITableEvent[]
+    pattents?: ITestCaseItem[]
   }>(),
   {
-    data: () => [
-      {
-        event_name: "doLogin",
-        action: "onclick",
-        action_element: "id::btn_login",
-        element_name: "text::id::user_id",
-      },
-      {
-        event_name: "doLogin",
-        action: "onclick",
-        action_element: "id::btn_login",
-        element_name: "password::id::password",
-      },
-    ],
+    data: () => [{} as ITableEvent]
   }
-);
+)
 
 const emit = defineEmits<{
-  updateTestCase: [value: ITestCaseItem[]];
-}>();
+  updatePattent: [type: string, value: ITestCaseItem[]]
+}>()
 
-const dataSource = ref<IDataItem[]>(props.data);
-const listTestCase = ref<ITestCaseItem[]>([{}]);
+const dataSource = ref<ITableEvent[]>(props.data)
+const listPattent = ref<ITestCaseItem[]>(props.pattents || ([{}] as ITestCaseItem[]))
 
 const handleAddCase = () => {
-  listTestCase.value.push({} as ITestCaseItem);
-};
+  listPattent.value.push({} as ITestCaseItem)
+}
 
 watch(
-  () => listTestCase.value,
+  () => listPattent.value,
   () => {
-    emit("updateTestCase", listTestCase.value);
+    emit('updatePattent', props.type, listPattent.value)
   },
   { deep: true }
-);
+)
 </script>
 
 <style lang="scss" scoped>
-@import "./FormTestCase.scss";
+@import './FormTestCase.scss';
 </style>
