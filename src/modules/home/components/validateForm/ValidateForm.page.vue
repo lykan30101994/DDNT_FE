@@ -1,13 +1,13 @@
 <template>
-  <form class="row g-3 mt-2" v-for="(row, index) in data" :key="index">
-    <h5>{{ row.type }}::{{ row.c_element }}::{{ row.selector }}</h5>
+  <form class="row g-3 mt-2">
+    <h5>{{ validateForm.title }}</h5>
     <div class="col-md-6">
       <div class="form-check">
         <input
           class="form-check-input"
           type="checkbox"
           id="invalidCheck1"
-          @click="toggleInput(index, 'required')"
+          @click="toggleInput('required')"
         />
         <label class="form-check-label" for="invalidCheck1"> REQUIRED </label>
       </div>
@@ -15,10 +15,11 @@
     <div class="col-md-6">
       <label for="validationDefault02" class="form-label">DATA CHECK</label>
       <input
+        v-model="validateForm.dataRequired"
         type="text"
         class="form-control"
         id="validationDefault02"
-        :disabled="arrChecked[index].isRequiredChecked"
+        :disabled="arrChecked.isRequiredChecked"
       />
     </div>
     <div class="col-md-2">
@@ -27,7 +28,7 @@
           class="form-check-input"
           type="checkbox"
           id="invalidCheck2"
-          @click="toggleInput(index, 'maxlength')"
+          @click="toggleInput('maxlength')"
         />
         <label class="form-check-label" for="invalidCheck2"> MAXLENGTH </label>
       </div>
@@ -35,19 +36,21 @@
     <div class="col-md-4">
       <label for="validationDefault01" class="form-label">VALUE</label>
       <input
+        v-model="validateForm.valueMaxLength"
         type="text"
         class="form-control"
         id="validationDefault01"
-        :disabled="arrChecked[index].isMaxLengthChecked"
+        :disabled="arrChecked.isMaxLengthChecked"
       />
     </div>
     <div class="col-md-6">
       <label for="validationDefault02" class="form-label">DATA CHECK</label>
       <input
+        v-model="validateForm.dataMaxLength"
         type="text"
         class="form-control"
         id="validationDefault02"
-        :disabled="arrChecked[index].isMaxLengthChecked"
+        :disabled="arrChecked.isMaxLengthChecked"
       />
     </div>
     <div class="col-md-2">
@@ -56,7 +59,7 @@
           class="form-check-input"
           type="checkbox"
           id="invalidCheck3"
-          @click="toggleInput(index, 'format')"
+          @click="toggleInput('format')"
         />
         <label class="form-check-label" for="invalidCheck3"> FORMAT </label>
       </div>
@@ -64,14 +67,15 @@
     <div class="col-md-4">
       <label for="validationDefault01" class="form-label">VALUE</label>
       <select
+        v-model="validateForm.valueFormat"
         id="dropdown"
         class="form-control"
-        :disabled="arrChecked[index].isFormatChecked"
+        :disabled="arrChecked.isFormatChecked"
       >
         <option
           v-for="option in options"
           :key="option.value"
-          :value="option.value"
+          :value="option.text"
         >
           {{ option.text }}
         </option>
@@ -80,11 +84,11 @@
     <div class="col-md-6">
       <label for="validationDefault02" class="form-label">DATA CHECK</label>
       <input
+        v-model="validateForm.dataFormat"
         type="text"
         class="form-control"
         id="validationDefault02"
-        value="Test0001"
-        :disabled="arrChecked[index].isFormatChecked"
+        :disabled="arrChecked.isFormatChecked"
       />
     </div>
   </form>
@@ -92,11 +96,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import type { ITableEvent } from "@/modules/home/home.type";
 
-const props = defineProps<{
-  data: ITableEvent[];
-}>();
+const validateForm = defineModel<IValidateForm>({
+  default: {} as IValidateForm
+});
 
 const options = ref([
   { value: 0, text: "" },
@@ -105,27 +108,41 @@ const options = ref([
   { value: 3, text: "yyyy/mm/dd" },
 ]);
 
-const arrChecked = ref(
-  props.data.map((_, index) => {
-    return {
-      isRequiredChecked: true,
-      isMaxLengthChecked: true,
-      isFormatChecked: true,
-    };
-  })
-);
+const arrChecked = ref({
+  isRequiredChecked: true,
+  isMaxLengthChecked: true,
+  isFormatChecked: true,
+});
 
-const toggleInput = (index: number, type: string) => {
-  const ischecked = arrChecked.value[index];
-
-  if (type === "required") {
+const toggleInput = (type: string) => {
+  const ischecked = arrChecked.value;
+validateForm
+  if (type === 'required') {
     ischecked.isRequiredChecked = !ischecked.isRequiredChecked;
-  } else if (type === "maxlength") {
+    setDefaultValue('required', ischecked.isRequiredChecked)
+  } else if (type === 'maxlength') {
     ischecked.isMaxLengthChecked = !ischecked.isMaxLengthChecked;
+    setDefaultValue('maxlength', ischecked.isMaxLengthChecked)
   } else {
     ischecked.isFormatChecked = !ischecked.isFormatChecked;
+    setDefaultValue('format', ischecked.isFormatChecked)
   }
 };
+
+const setDefaultValue = (title: string, value: boolean) => {
+    if(title==='required'){
+      validateForm.value.required = value
+      validateForm.value.dataRequired = ''
+    } else if(title === 'maxlength'){
+      validateForm.value.maxLength = value
+      validateForm.value.dataMaxLength = ''
+      validateForm.value.valueMaxLength = ''
+    }else{
+      validateForm.value.format = value
+      validateForm.value.dataFormat = ''
+      validateForm.value.valueFormat = ''
+    }
+}
 </script>
 
 <style></style>

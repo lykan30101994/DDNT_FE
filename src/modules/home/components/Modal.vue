@@ -42,7 +42,9 @@
             </ul>
 
             <div v-if="activeTab === 'tab1'">
-              <ValidateFrom :data="dataForm"/>
+              <template v-for="(item, idx) in dataForm" :key="idx">
+                <ValidateFrom v-model="dataForm[idx]" />
+              </template>
             </div>
             <div v-else-if="activeTab === 'tab2'">
               <FormTestCase />
@@ -59,7 +61,7 @@
             >
               CANCEL
             </button>
-            <button type="submit" class="btn btn-primary">SAVE</button>
+            <button type="submit" class="btn btn-primary" @click="saveData">SAVE</button>
           </div>
         </div>
       </div>
@@ -70,19 +72,21 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import FormTestCase from "./formTestCase/FormTestCase.vue";
-import ValidateFrom from "./validateForm/ValidateForm.page.vue"
-import type {ITableEvent} from "@/modules/home/home.type";
+import ValidateFrom from "./validateForm/ValidateForm.page.vue";
 
 const props = defineProps<{
   showModal: Boolean;
   toggleModal: () => void;
-  dataForm: ITableEvent[];
+  dataForm: IValidateForm[];
 }>();
 
 const activeTab = ref("tab1");
 const switchTab = (tab: string) => {
   activeTab.value = tab;
 };
+const saveData = () => {
+  console.log(props.dataForm)
+}
 
 const rows = ref([
   { type: "text", c_element: "id", name: "user_id" },
