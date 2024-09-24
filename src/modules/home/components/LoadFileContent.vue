@@ -175,13 +175,12 @@ const convertLocalStorageToTestCase = (pattents: IPattentLocalStorage) => {
   const arrTestCase = {} as IPattentLocalStorage
   const pattentCombined = combine(pattents)
   let index = 0
-  for(const key in pattentCombined) {
+  for (const key in pattentCombined) {
     arrTestCase[key] = pattentCombined[key]?.map((item: ITestCaseItem) => {
       index++
       return renderTestCase(item, index)
     })
   }
-
 
   return arrTestCase
 }
