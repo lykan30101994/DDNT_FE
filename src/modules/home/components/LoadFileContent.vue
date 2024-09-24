@@ -65,6 +65,8 @@ import jp from '../../../assets/locales/jp'
 import type { IButton } from '@/components/common/button/ButtonGroup.type'
 import type { IOption } from '@/components/common/dropdown/DropDown.type'
 import type { IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
+import { ExcelUtils } from '@/components/utils/excel-utils'
+import { Template } from '@/components/template/template'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 
@@ -168,12 +170,54 @@ const loadData = () => {
 }
 
 const handleExportTestCase = () => {
-  const pattents = pattentLocalStorage.get()
+  // const pattents = pattentLocalStorage.get()
+  //
+  // if (pattents) {
+  //   const dataExport = convertLocalStorageToTestCase(pattents)
+  //   console.log(dataExport)
+  // }
 
-  if (pattents) {
-    const dataExport = convertLocalStorageToTestCase(pattents)
-    console.log(dataExport)
+  var dataExample = {
+    abnormal: [
+      {
+        no: 'TC00001',
+        purpose: '111',
+        description: null,
+        pre_condition: null,
+        test_step: 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor',
+        expected_result: '1111',
+        actual_result: null,
+        status: null,
+        comments: null
+      },
+      {
+        no: 'TC00002',
+        purpose: '222',
+        description: null,
+        pre_condition: null,
+        test_step: 'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
+        expected_result: '222',
+        actual_result: null,
+        status: null,
+        comments: null
+      }
+    ],
+    normal: [
+      {
+        no: 'TC00003',
+        purpose: '333',
+        description: null,
+        pre_condition: null,
+        test_step: 'Step 1: Nhập item password là 3333\nStep 2: Click button class::icon icon-eye password-indictor',
+        expected_result: '333',
+        actual_result: null,
+        status: null,
+        comments: null
+      }
+    ]
   }
+
+  ExcelUtils.writeWithTemplate(Template.TEST_CASE)
 }
 
 const convertLocalStorageToTestCase = (pattents: IPattentLocalStorage) => {

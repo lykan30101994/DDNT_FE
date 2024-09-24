@@ -4,11 +4,11 @@
       v-for="(button, index) in buttons"
       class="btn-group"
       :key="index"
+      @click="handleClick"
     >
       <span
         :disabled="button.disabled ?? false"
         :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']"
-        @click="handleClick"
       >
         {{ button.label }}
       </span>
