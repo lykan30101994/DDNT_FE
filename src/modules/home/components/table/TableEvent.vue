@@ -41,6 +41,7 @@
   <Modal
     :showModal="showModal"
     :data-form="data"
+    :data-validate-form="validateForm"
     @toggle-modal="toggleModal"
   />
 </template>
@@ -54,12 +55,20 @@ import Button from '@/components/common/button/Button.vue'
 import type { ITableEvent } from '@/modules/home/home.type'
 import Modal from '@/modules/home/components/Modal.vue'
 
-defineProps<{
+const props = defineProps<{
   headers: IHeaderTable[][]
   data: ITableEvent[]
   title?: string
   fieldTable: { [key: string]: string }
 }>()
+
+const validateForm = ref(
+  props.data.map((item, index) => {
+    return {
+      title: item.type + '::' + item.c_element + ' ::' + item.selector
+    }
+  }) as IValidate[]
+)
 
 const showModal = ref(false)
 const toggleModal = () => {

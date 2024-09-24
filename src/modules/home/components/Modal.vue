@@ -46,7 +46,12 @@
             </ul>
 
             <div v-if="activeTab === 'tab1'">
-              <ValidateFrom :data="dataForm" />
+              <template
+                v-for="(item, idx) in dataValidateForm"
+                :key="idx"
+              >
+                <ValidateFrom v-model="dataValidateForm[idx]" />
+              </template>
             </div>
             <div v-else-if="activeTab === 'tab2'">
               <FormTestCase
@@ -97,6 +102,7 @@ import type { IPattentTestCase, ITableEvent } from '@/modules/home/home.type'
 const props = defineProps<{
   showModal: Boolean
   dataForm: ITableEvent[]
+  dataValidateForm: IValidate[]
 }>()
 
 const emit = defineEmits<{
@@ -109,10 +115,12 @@ const switchTab = (tab: string) => {
 }
 
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
+const fileLocalStorage = localStorageUtil(CONSTANTS.KEY_CURRENT_FILE)
 
 const category = props.dataForm?.[0]?.category
 const { ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 
+const fileCurrent = ref<string>(fileLocalStorage.get())
 const pattentTestCase = ref<IPattentTestCase>({})
 
 const handleUpdatePattent = (type: string, pattent: ITestCaseItem[]) => {
@@ -123,6 +131,7 @@ const handleUpdatePattent = (type: string, pattent: ITestCaseItem[]) => {
 }
 
 const save = () => {
+  console.log(JSON.stringify(props.dataValidateForm, null, 2))
   const dataSave = convertBeforeSaveLocalStorage(pattentTestCase.value)
   pattentLocalStorage.set(dataSave)
   toggleModal()
@@ -133,7 +142,7 @@ const toggleModal = () => {
 }
 
 const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
-  const data = pattentLocalStorage.get() || {}
+  const data = pattentLocalStorage.get()?.[fileCurrent.value] || {}
 
   Object.keys(pattents).forEach((key) => {
     pattents[key] = pattents[key].filter((item) => {
@@ -142,15 +151,40 @@ const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
   })
 
   return {
-    ...data,
-    [category]: {
-      ...pattents
+    [fileCurrent.value]: {
+      ...data,
+      [category]: {
+        ...pattents
+      }
     }
   }
 }
 
 const convertFromLocalStorageToPattent = (pattents: any) => {
-  return pattents?.[category]
+  return pattents?.[fileCurrent.value]?.[category]
+}
+
+const initializeField = (field: IRequired | IMaxLength | IFormat) => {
+  return {
+    data_check: '',
+    value: '',
+    ...field
+  }
+}
+
+const setDefaultValidate = () => {
+  props.dataValidateForm.forEach((item) => {
+    const valid = item || (item = {} as IValidate)
+
+    valid.required = initializeField(valid.required) as IRequired
+    valid.required.required = true
+
+    valid.max_length = initializeField(valid.max_length) as IMaxLength
+    valid.max_length.max_length = true
+
+    valid.format = initializeField(valid.format) as IFormat
+    valid.format.format = true
+  })
 }
 
 const initValue = () => {
@@ -166,12 +200,15 @@ const initValue = () => {
 watch(
   () => props.showModal,
   () => {
+    fileCurrent.value = fileLocalStorage.get()
     initValue()
   }
 )
 
 onMounted(() => {
   initValue()
+  setDefaultValidate()
+  console.log(props.dataValidateForm)
 })
 </script>
 
