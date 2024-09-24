@@ -39,17 +39,8 @@ const emit = defineEmits<{
   updatePattent: [type: string, value: ITestCaseItem[]]
 }>()
 
-const initModel = computed(() => {
-  return [
-    {
-      action: props.data[0].action,
-      action_element: props.data[0].action_element
-    }
-  ] as ITestCaseItem[]
-})
-
 const dataSource = ref<ITableEvent[]>(props.data)
-const listPattent = ref<ITestCaseItem[]>(props.pattents || initModel.value)
+const listPattent = ref<ITestCaseItem[]>(props.pattents || [{}])
 
 const handleAddCase = () => {
   listPattent.value.push({} as ITestCaseItem)

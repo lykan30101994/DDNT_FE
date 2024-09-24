@@ -174,30 +174,36 @@ const handleExportTestCase = () => {
 const convertLocalStorageToTestCase = (pattents: IPattentLocalStorage) => {
   const arrTestCase = {} as IPattentLocalStorage
   const pattentCombined = combine(pattents)
-
-  Object.keys(pattentCombined).forEach((key) => {
+  let index = 0
+  for(const key in pattentCombined) {
     arrTestCase[key] = pattentCombined[key]?.map((item: ITestCaseItem) => {
-      return renderTestCase(item)
+      index++
+      return renderTestCase(item, index)
     })
-  })
+  }
+
 
   return arrTestCase
 }
 
 const combine = (pattents: IPattentLocalStorage) => {
-  const arrResult = { [NORMAL]: [], [ABNORMAL]: [] } as IPattentLocalStorage
+  const arrResult = { [ABNORMAL]: [], [NORMAL]: [] } as IPattentLocalStorage
 
-  Object.keys(pattents).forEach((key) => {
-    arrResult[NORMAL] = [...arrResult[NORMAL], ...pattents[key][NORMAL]]
-    arrResult[ABNORMAL] = [...arrResult[ABNORMAL], ...pattents[key][ABNORMAL]]
-  })
+  for (const key in pattents) {
+    if (pattents[key][ABNORMAL]) {
+      arrResult[ABNORMAL].push(...pattents[key][ABNORMAL])
+    }
+    if (pattents[key][NORMAL]) {
+      arrResult[NORMAL].push(...pattents[key][NORMAL])
+    }
+  }
 
   return arrResult
 }
 
-const renderTestCase = (input: any) => {
+const renderTestCase = (input: any, index: number) => {
   const { test_description, expected_result, action, action_element, ...inputs } = input
-
+  const no = 'TC0000' + index
   let stepCounter = 1
   let testSteps = ''
 
@@ -209,13 +215,16 @@ const renderTestCase = (input: any) => {
 
   testSteps += `Step ${stepCounter}: Click button ${action_element}\n`
   stepCounter++
-
   const result = {
+    no: no,
     purpose: test_description,
     description: null,
     pre_condition: null,
     test_step: testSteps.trim(),
-    expected_result
+    expected_result,
+    actual_result: null,
+    status: null,
+    comments: null
   }
 
   return result
