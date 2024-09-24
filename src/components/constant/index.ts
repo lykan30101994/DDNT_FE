@@ -11,5 +11,6 @@ export const CONSTANTS = {
     NORMAL: 'normal'
   },
   KEY_PATTENT: 'pattents',
-  KEY_CURRENT_FILE: 'current_file'
+  KEY_CURRENT_FILE: 'current_file',
+  KEY_LOCAL_STORAGE_DATA: 'data_event'
 }

@@ -30,7 +30,7 @@
       </div>
     </div>
   </CardWrapper>
-  <Content :map-event="mapEvent" />
+  <Content :map-event="dataMapTable" />
   <CardWrapper :is-fixed="true">
     <div class="d-flex group-item justify-content-end">
       <DropDown
@@ -38,6 +38,7 @@
         label="Select Language"
         size="lg"
         :options="optionLanguage"
+        @update:model-value="() => changeLanguage(selectedLanguage?.toString() || '0')"
       />
       <ButtonGroup
         align="end"
@@ -49,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import * as XLSX from 'xlsx'
 import CardWrapper from '@/components/common/card/CardWrapper.vue'
 import Label from '@/components/common/label/Label.vue'
@@ -58,6 +59,9 @@ import DropDown from '@/components/common/dropdown/DropDown.vue'
 import Content from '@/modules/home/components/Content.vue'
 import { CONSTANTS, LANGUAGE } from '@/components/constant'
 import { localStorageUtil } from '@/components/utils/local-storage-ultil'
+import vn from '../../../assets/locales/vn'
+import en from '../../../assets/locales/en'
+import jp from '../../../assets/locales/jp'
 import type { IButton } from '@/components/common/button/ButtonGroup.type'
 import type { IOption } from '@/components/common/dropdown/DropDown.type'
 import type { IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
@@ -67,21 +71,22 @@ const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 const file = ref<File | null>(null)
 const headers = ref<string[]>([])
 const tableData = ref<string[][]>([])
-const selectedLanguage = ref<string | number>()
-
+const selectedLanguage = ref<string | number | undefined>()
+const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
+const translations = ref(jp)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 
 const optionLanguage: IOption[] = [
   {
-    label: 'Vietnam',
+    label: 'VN',
     value: LANGUAGE.VN
   },
   {
-    label: 'Japan',
+    label: 'JP',
     value: LANGUAGE.JP
   },
   {
-    label: 'English',
+    label: 'EN',
     value: LANGUAGE.EN
   }
 ]
@@ -228,6 +233,43 @@ const renderTestCase = (input: any, index: number) => {
 
   return result
 }
+const setDataFromLocalStorage = () => {
+  const dataFromStore = localStorage.getItem(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
+  if (dataFromStore) {
+    const obj = JSON.parse(dataFromStore)
+    dataMapTable.value = new Map(Object.entries(obj))
+  }
+}
+
+const changeLanguage = (lang: string) => {
+  switch (lang.toString()) {
+    case '0':
+      translations.value = vn
+      break
+    case '1':
+      translations.value = jp
+      break
+    case '2':
+      translations.value = en
+      break
+  }
+}
+
+watch(
+  () => mapEvent.value,
+  (newValue) => {
+    if (newValue) {
+      const obj = Object.fromEntries(newValue)
+      localStorage.setItem(CONSTANTS.KEY_LOCAL_STORAGE_DATA, JSON.stringify(obj))
+      dataMapTable.value = newValue
+    }
+  },
+  { deep: true }
+)
+
+onMounted(() => {
+  setDataFromLocalStorage()
+})
 </script>
 
 <style lang="scss" scoped>
