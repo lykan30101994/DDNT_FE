@@ -120,7 +120,6 @@ const fileLocalStorage = localStorageUtil(CONSTANTS.KEY_CURRENT_FILE)
 const category = props.dataForm?.[0]?.category
 const { ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 
-const fileCurrent = ref<string>(fileLocalStorage.get())
 const pattentTestCase = ref<IPattentTestCase>({})
 
 const handleUpdatePattent = (type: string, pattent: ITestCaseItem[]) => {
@@ -142,7 +141,7 @@ const toggleModal = () => {
 }
 
 const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
-  const data = pattentLocalStorage.get()?.[fileCurrent.value] || {}
+  const data = pattentLocalStorage.get() || {}
 
   Object.keys(pattents).forEach((key) => {
     pattents[key] = pattents[key].filter((item) => {
@@ -151,17 +150,15 @@ const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
   })
 
   return {
-    [fileCurrent.value]: {
       ...data,
       [category]: {
         ...pattents
       }
-    }
   }
 }
 
 const convertFromLocalStorageToPattent = (pattents: any) => {
-  return pattents?.[fileCurrent.value]?.[category]
+  return pattents?.[category]
 }
 
 const initializeField = (field: IRequired | IMaxLength | IFormat) => {
@@ -196,14 +193,6 @@ const initValue = () => {
     }
   }
 }
-
-watch(
-  () => props.showModal,
-  () => {
-    fileCurrent.value = fileLocalStorage.get()
-    initValue()
-  }
-)
 
 onMounted(() => {
   initValue()
