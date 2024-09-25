@@ -115,7 +115,6 @@ const switchTab = (tab: string) => {
 }
 
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
-const fileLocalStorage = localStorageUtil(CONSTANTS.KEY_CURRENT_FILE)
 
 const category = props.dataForm?.[0]?.category
 const { ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
@@ -130,7 +129,6 @@ const handleUpdatePattent = (type: string, pattent: ITestCaseItem[]) => {
 }
 
 const save = () => {
-  console.log(JSON.stringify(props.dataValidateForm, null, 2))
   const dataSave = convertBeforeSaveLocalStorage(pattentTestCase.value)
   pattentLocalStorage.set(dataSave)
   toggleModal()
@@ -144,16 +142,22 @@ const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
   const data = pattentLocalStorage.get() || {}
 
   Object.keys(pattents).forEach((key) => {
-    pattents[key] = pattents[key].filter((item) => {
-      return Object.values(item).some((value) => value)
-    })
+    pattents[key] = pattents[key]
+      .filter((item) => {
+        return Object.values(item).some((value) => value)
+      })
+      .map((item) => ({
+        ...item,
+        action: props.dataForm[0]?.action,
+        action_element: props.dataForm[0]?.action_element
+      }))
   })
 
   return {
-      ...data,
-      [category]: {
-        ...pattents
-      }
+    ...data,
+    [category]: {
+      ...pattents
+    }
   }
 }
 

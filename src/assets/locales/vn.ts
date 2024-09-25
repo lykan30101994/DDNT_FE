@@ -11,6 +11,9 @@ export default {
     `Step1: Nhập data vào item ${value} là ${data}\n Step2: Click button ${event}`,
   testStepFormat: (value: string, event: string) =>
     `Step1: Nhập data vào item ${value} \n Step2: Click button ${event}`,
+  testStepCommon: (step: number, item: string, value: string) =>
+    `Step${step}: Nhập data vào item ${item} với giá trị là: ${value}\n`,
+  testStepSubmit: (step: number, element: string) => `Step ${step}: Click button ${element}\n`,
   // Expected Result
   expectedResultRequired: (item: string) => `Hiển thị message: Trường ${item} là trường bắt buộc`,
   expectedResultMaxLength: (value: string) => `Hiển thị message: Vui lòng nhập trong vòng ${value} ký tự`,

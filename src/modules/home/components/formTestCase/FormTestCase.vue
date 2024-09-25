@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import TestCase from './TestCaseItem.vue'
 import type { ITableEvent } from '../../home.type'
 
@@ -46,6 +46,12 @@ const handleAddCase = () => {
   listPattent.value.push({} as ITestCaseItem)
 }
 
+const initListPattent = () => {
+  if (!listPattent.value?.length) {
+    listPattent.value = [{}]
+  }
+}
+
 watch(
   () => listPattent.value,
   () => {
@@ -53,6 +59,10 @@ watch(
   },
   { deep: true }
 )
+
+onMounted(() => {
+  initListPattent()
+})
 </script>
 
 <style lang="scss" scoped>

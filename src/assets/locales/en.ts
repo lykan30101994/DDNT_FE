@@ -8,6 +8,9 @@ export default {
     `Step 1: Enter data into item ${value} is ${data} \n Step 2: Click button ${event}`,
   testStepFormat: (value: string, event: string) =>
     `Step 1: Enter data into item ${value} \n Step 2: Click button ${event}`,
+  testStepCommon: (step: number, item: string, value: string) =>
+    `Step${step}: Nhập data vào item ${item} với giá trị là: ${value}\n`,
+  testStepSubmit: (step: number, element: string) => `Step ${step}: Click button ${element}\n`,
   expectedResultRequired: (item: string) => `Display message: Field ${item} is required`,
   expectedResultMaxLength: (value: string) => `Display message: Please enter within ${value} characters.`,
   expectedResultFormat: (value: string) => `Display message: Please enter the correct format ${value}.`

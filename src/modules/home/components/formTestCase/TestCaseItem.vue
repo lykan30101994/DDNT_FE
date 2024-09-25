@@ -82,14 +82,6 @@ const initCheckBox = () => {
   })
 }
 
-const initModel = () => {
-  pattentTestCase.value = {
-    ...pattentTestCase.value,
-    action: props.data[0].action,
-    action_element: props.data[0].action_element
-  }
-}
-
 watch(
   () => modelCheckBox.value,
   (newVal) => {
@@ -113,7 +105,6 @@ watch(
 
 onMounted(() => {
   initCheckBox()
-  initModel()
 })
 </script>
 

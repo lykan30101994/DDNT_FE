@@ -8,6 +8,9 @@ export default {
     `ステップ1: アイテム ${value} にデータを入力するのは ${data}\n ステップ2: ボタン ${event} をクリックする`,
   testStepFormat: (value: string, event: string) =>
     `ステップ1: アイテム ${value} にデータを入力します \n ステップ2: ボタン ${event} をクリックする`,
+  testStepCommon: (step: number, item: string, value: string) =>
+    `Step${step}: Nhập data vào item ${item} với giá trị là: ${value}\n`,
+  testStepSubmit: (step: number, element: string) => `Step ${step}: Click button ${element}\n`,
   expectedResultRequired: (item: string) => `メッセージを表示: ${item}は必須入力です。`,
   expectedResultMaxLength: (value: string) => `メッセージを表示: ${value}文字以内で入力してください。`,
   expectedResultFormat: (value: string) => `メッセージを表示: 正しいフォーマット ${value} で入力してください。`
