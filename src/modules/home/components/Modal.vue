@@ -118,7 +118,7 @@ const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 const fileLocalStorage = localStorageUtil(CONSTANTS.KEY_CURRENT_FILE)
 
 const category = props.dataForm?.[0]?.category
-const { ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
+const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 
 const pattentTestCase = ref<IPattentTestCase>({})
 
@@ -150,10 +150,11 @@ const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
   })
 
   return {
-      ...data,
-      [category]: {
-        ...pattents
-      }
+    ...data,
+    [category]: {
+      ...pattents,
+      [VALIDATTION]: props.dataValidateForm
+    }
   }
 }
 

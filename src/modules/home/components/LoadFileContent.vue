@@ -171,303 +171,30 @@ const loadData = () => {
 
 const handleExportTestCase = () => {
   const pattents = pattentLocalStorage.get()
-  
+  const abnormal: string[][] = []
+  const normal: string[][] = []
   if (pattents) {
     const dataExport = convertLocalStorageToTestCase(pattents)
-    console.log(dataExport)
-  }
+    dataExport.abnormal.forEach((item: any) => {
+      abnormal.push(item)
+    })
+    dataExport.normal.forEach((item: any) => {
+      normal.push(item)
+    })
+    const dataExample: ICategoryTemplate = {
+      validation: convertValidationToArray(inputData),
+      abnormal: abnormal,
+      normal: normal
+    }
 
-  const dataExample: ICategoryTemplate = {
-    validation: convertValidationToArray(inputData),
-    abnormal: [
-      [
-        'TC00010',
-        '111',
-        'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor',
-        '1111'
-      ],
-      [
-        'TC00011',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00012',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00013',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00014',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00015',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00016',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ]
-    ],
-    normal: [
-      [
-        'TC00015',
-        '333',
-        'Step 1: Nhập item password là 3333\nStep 2: Click button class::icon icon-eye password-indictor',
-        '333'
-      ],
-      [
-        'TC00016',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00017',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00015',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ],
-      [
-        'TC00016',
-        '222',
-        'Step 1: Nhập item password là 222\nStep 2: Click button class::icon icon-eye password-indictor',
-        '222'
-      ]
-    ]
+    ExcelUtils.writeWithTemplate(Template.TEST_CASE, dataExample, 'A,E,AC,AM')
   }
-  convertValidationToArray(inputData);
-
- ExcelUtils.writeWithTemplate(Template.TEST_CASE, dataExample, 'A,E,AC,AM')
 }
 
 const convertLocalStorageToTestCase = (pattents: IPattentLocalStorage) => {
   const arrTestCase = {} as IPattentLocalStorage
   const pattentCombined = combine(pattents)
+ 
   let index = 0
   for (const key in pattentCombined) {
     arrTestCase[key] = pattentCombined[key]?.map((item: ITestCaseItem) => {
@@ -508,17 +235,7 @@ const renderTestCase = (input: any, index: number) => {
 
   testSteps += `Step ${stepCounter}: Click button ${action_element}\n`
   stepCounter++
-  const result = {
-    no: no,
-    purpose: test_description,
-    description: null,
-    pre_condition: null,
-    test_step: testSteps.trim(),
-    expected_result,
-    actual_result: null,
-    status: null,
-    comments: null
-  }
+  const result = [no, test_description, testSteps, expected_result]
 
   return result
 }
@@ -534,41 +251,41 @@ const inputData: any = {
   doLogin: {
     validation: [
       {
-        action_element: "id::btn_login",
-        title: "text::id ::user_id",
-        required: { data_check: "", value: "", required: false },
-        max_length: { data_check: "2222", value: "22", max_length: false },
-        format: { data_check: "22222", value: "999", format: true }
+        action_element: 'id::btn_login',
+        title: 'text::id ::user_id',
+        required: { data_check: '', value: '', required: false },
+        max_length: { data_check: '2222', value: '22', max_length: false },
+        format: { data_check: '22222', value: '999', format: true }
       },
       {
-        action_element: "id::btn_login",
-        title: "password::id ::password",
-        required: { data_check: "22222", value: "", required: true },
-        max_length: { data_check: "2222", value: "2222", max_length: true },
-        format: { data_check: "22222", value: "999", format: false }
+        action_element: 'id::btn_login',
+        title: 'password::id ::password',
+        required: { data_check: '22222', value: '', required: true },
+        max_length: { data_check: '2222', value: '2222', max_length: true },
+        format: { data_check: '22222', value: '999', format: false }
       }
     ]
   }
-};
+}
 
 const convertValidationToArray = (inputData: any): string[][] => {
-  const validation: string[][] = [];
-  let testCaseCounter = 1;
+  const validation: string[][] = []
+  let testCaseCounter = 1
 
   inputData.doLogin.validation.forEach((item: any) => {
-    const userId = item.title.split("::")[2].trim();
-    const actionElement = item.action_element;
-    const valueMaxlength = item?.max_length?.value;
-    const dataFormat = item?.format?.data_check;
-    const valueFormat = item?.format?.value;
-    
+    const userId = item.title.split('::')[2].trim()
+    const actionElement = item.action_element
+    const valueMaxlength = item?.max_length?.value
+    const dataFormat = item?.format?.data_check
+    const valueFormat = item?.format?.value
+
     if (!item.required.required) {
       validation.push([
         `TC${String(testCaseCounter++).padStart(5, '0')}`,
         translations.value.validateRequired(userId),
         translations.value.testStepRequired(userId, actionElement),
-        translations.value.expectedResultRequired(userId),
-      ]);
+        translations.value.expectedResultRequired(userId)
+      ])
     }
 
     if (!item.max_length.max_length) {
@@ -576,8 +293,8 @@ const convertValidationToArray = (inputData: any): string[][] => {
         `TC${String(testCaseCounter++).padStart(5, '0')}`,
         translations.value.validateMaxLength(userId, valueMaxlength),
         translations.value.testStepMaxlenght(valueMaxlength, actionElement, dataFormat),
-        translations.value.expectedResultMaxLength(valueMaxlength),
-      ]);
+        translations.value.expectedResultMaxLength(valueMaxlength)
+      ])
     }
 
     if (!item.format.format) {
@@ -585,14 +302,21 @@ const convertValidationToArray = (inputData: any): string[][] => {
         `TC${String(testCaseCounter++).padStart(5, '0')}`,
         translations.value.expectedResultFormat(userId),
         translations.value.testStepFormat(valueFormat, actionElement),
-        translations.value.expectedResultFormat(valueFormat),
-      ]);
+        translations.value.expectedResultFormat(valueFormat)
+      ])
     }
-  });
-  console.log(validation);
-  return validation;
-};
+  })
+  console.log(validation)
+  return validation
+}
 
+const convertAbnormalToArray = (inputData: any): string[][] => {}
+
+const convertNormalToArray = (inputData: any): string[][] => {
+  inputData.normal.forEach((item: any) => {
+    return item
+  })
+}
 
 const changeLanguage = (lang: string) => {
   switch (lang.toString()) {
