@@ -38,7 +38,6 @@
         label="Select Language"
         size="lg"
         :options="optionLanguage"
-        @update:model-value="() => changeLanguage(selectedLanguage?.toString() || '0')"
       />
       <ButtonGroup
         align="end"
@@ -59,22 +58,23 @@ import DropDown from '@/components/common/dropdown/DropDown.vue'
 import Content from '@/modules/home/components/Content.vue'
 import { CONSTANTS, LANGUAGE } from '@/components/constant'
 import { localStorageUtil } from '@/components/utils/local-storage-ultil'
-import vn from '../../../assets/locales/vn'
-import en from '../../../assets/locales/en'
-import jp from '../../../assets/locales/jp'
+import locales from '../../../assets/locales'
 import type { IButton } from '@/components/common/button/ButtonGroup.type'
 import type { IOption } from '@/components/common/dropdown/DropDown.type'
 import type { IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
+const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 
 const file = ref<File | null>(null)
 const headers = ref<string[]>([])
 const tableData = ref<string[][]>([])
-const selectedLanguage = ref<string | number | undefined>()
+const selectedLanguage = ref<string>(LANGUAGE.VN)
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
-const translations = ref(jp)
-const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
+
+const languages = computed(() => {
+  return locales[selectedLanguage.value]
+})
 
 const optionLanguage: IOption[] = [
   {
@@ -179,24 +179,39 @@ const handleExportTestCase = () => {
 const convertLocalStorageToTestCase = (pattents: IPattentLocalStorage) => {
   const arrTestCase = {} as IPattentLocalStorage
   const pattentCombined = combine(pattents)
-  let index = 0
+  let index = 1
   for (const key in pattentCombined) {
-    arrTestCase[key] = pattentCombined[key]?.map((item: ITestCaseItem) => {
-      index++
-      return renderTestCase(item, index)
-    })
+    if (key == VALIDATTION) {
+      arrTestCase[key] = []
+      pattentCombined[key]?.forEach((item: ITestCaseItem) => {
+        const result = renderTestCaseValidation(item, index)
+        arrTestCase[key] = [...arrTestCase[key], ...result]
+        index += result?.length || 0
+      })
+    } else {
+      arrTestCase[key] = pattentCombined[key]?.map((item: ITestCaseItem) => {
+        const result = renderTestCase(item, index)
+        index++
+        return result
+      })
+    }
   }
 
   return arrTestCase
 }
 
 const combine = (pattents: IPattentLocalStorage) => {
-  const arrResult = { [ABNORMAL]: [], [NORMAL]: [] } as IPattentLocalStorage
+  const arrResult = { [VALIDATTION]: [], [ABNORMAL]: [], [NORMAL]: [] } as IPattentLocalStorage
 
   for (const key in pattents) {
+    if (pattents[key][VALIDATTION]) {
+      arrResult[VALIDATTION].push(...pattents[key][VALIDATTION])
+    }
+
     if (pattents[key][ABNORMAL]) {
       arrResult[ABNORMAL].push(...pattents[key][ABNORMAL])
     }
+
     if (pattents[key][NORMAL]) {
       arrResult[NORMAL].push(...pattents[key][NORMAL])
     }
@@ -219,8 +234,9 @@ const renderTestCase = (input: any, index: number) => {
 
   testSteps += `Step ${stepCounter}: Click button ${action_element}\n`
   stepCounter++
-  const result = {
-    no: no,
+
+  return {
+    no,
     purpose: test_description,
     description: null,
     pre_condition: null,
@@ -230,28 +246,60 @@ const renderTestCase = (input: any, index: number) => {
     status: null,
     comments: null
   }
-
-  return result
 }
+
+const renderTestCaseValidation = (input: any, index: number) => {
+  const testCase = []
+  const { title, ...remains } = input
+
+  for (const key in remains) {
+    const no = 'TC0000' + index
+    const { value, required, max_length, format } = remains[key]
+    let testSteps = ''
+    let expectedResult = ''
+    let purpose = ''
+
+    if (key === 'required') {
+      testSteps = languages.value.testStepRequired(title, 'button')
+      expectedResult = languages.value.expectedResultRequired(title)
+      purpose = languages.value.validateRequired(title)
+    }
+
+    if (key === 'max_length') {
+      testSteps = languages.value.testStepRequired(title, 'button')
+      expectedResult = languages.value.expectedResultMaxLength(value, title)
+      purpose = languages.value.validateMaxLength(value, title)
+    }
+
+    if (key === 'format') {
+      testSteps = languages.value.testStepRequired(title, 'button')
+      expectedResult = languages.value.expectedResultFormat(value)
+      purpose = languages.value.validateFormat(value, title)
+    }
+
+    testCase.push({
+      no,
+      purpose,
+      description: null,
+      pre_condition: null,
+      test_step: testSteps.trim(),
+      expected_result: expectedResult,
+      actual_result: null,
+      status: null,
+      comments: null
+    })
+
+    index++
+  }
+
+  return testCase
+}
+
 const setDataFromLocalStorage = () => {
   const dataFromStore = localStorage.getItem(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
   if (dataFromStore) {
     const obj = JSON.parse(dataFromStore)
     dataMapTable.value = new Map(Object.entries(obj))
-  }
-}
-
-const changeLanguage = (lang: string) => {
-  switch (lang.toString()) {
-    case '0':
-      translations.value = vn
-      break
-    case '1':
-      translations.value = jp
-      break
-    case '2':
-      translations.value = en
-      break
   }
 }
 
