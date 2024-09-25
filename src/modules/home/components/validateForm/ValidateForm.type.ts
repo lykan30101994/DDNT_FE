@@ -1,26 +1,18 @@
-interface IValidateForm {
-  title?: string;
-  validation: IValidation
+interface IValidate {
+  action_element?: string
+  title?: string
+  required: ICommonValidate
+  max_length: ICommonValidate
+  format: ICommonValidate
 }
 
-interface IValidation {
-  required: IRequired
-  max_length: IMaxLength
-  format: IFormat
-}
-interface IRequired {
-  required?: boolean;
-  data_required?: string;
+interface ICommonValidate {
+  is_checked?: boolean
+  value?: string
+  data_check?: string
 }
 
-interface IMaxLength {
-  max_length?: boolean;
-  value_max_length?: string;
-  data_max_length?: string;
-}
-
-interface IFormat {
-  format?: boolean;
-  value_format?: string;
-  data_format?: string;
+interface IField {
+  data_check: string
+  value: string
 }

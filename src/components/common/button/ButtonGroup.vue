@@ -1,15 +1,15 @@
 <template>
   <div :class="['my-group-btn', getAlignClass(align)]">
     <div
-        v-for="(button, index) in buttons"
-        :key="index" class="btn-group">
-      <span v-if="button.isDropDown">
-        <DropDown :label="button.label" :options="button.option" :size="button.size"/>
-      </span>
+      v-for="(button, index) in buttons"
+      class="btn-group"
+      :key="index"
+      @click="handleClick"
+    >
       <span
-          v-else
-          :disabled="button.disabled ?? false"
-          :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']">
+        :disabled="button.disabled ?? false"
+        :class="['btn', getSizeClass(button.size), button.btnClass ?? 'btn-primary', button.isBold ? 'fw-bold' : '']"
+      >
         {{ button.label }}
       </span>
     </div>
@@ -17,12 +17,15 @@
 </template>
 
 <script setup lang="ts">
-import type {IButton} from "./ButtonGroup.type.js";
-import DropDown from "@/components/common/dropdown/DropDown.vue";
+import type { IButton } from './ButtonGroup.type.js'
 
 defineProps<{
   buttons: IButton[]
   align?: string
+}>()
+
+const emit = defineEmits<{
+  onClick: [e: Event]
 }>()
 
 const getAlignClass = (align: string | undefined) => {
@@ -51,8 +54,11 @@ const getSizeClass = (size: string | undefined) => {
   return sizeClass
 }
 
+const handleClick = (e: Event) => {
+  emit('onClick', e)
+}
 </script>
 
 <style lang="scss" scoped>
-@import "ButtonGroup";
+@import 'ButtonGroup';
 </style>

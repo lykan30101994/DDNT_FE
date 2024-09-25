@@ -1,13 +1,24 @@
 <template>
   <div :class="['my-dropdown dropdown', getSizeClass]">
-    <button :class="['btn btn-info dropdown-toggle w-100', buttonClass]" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <button
+      :class="['btn btn-info dropdown-toggle w-100', buttonClass]"
+      type="button"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
       {{ selectedValue?.label ?? label ?? '' }}
     </button>
     <ul class="dropdown-menu">
-      <template v-for="(opt, indOpt) in options"
-                :key="indOpt">
+      <template
+        v-for="(opt, indOpt) in options"
+        :key="indOpt"
+      >
         <li>
-          <a class="dropdown-item" @click="selectOption(opt)">{{ opt.label }}</a>
+          <a
+            class="dropdown-item"
+            @click="selectOption(opt)"
+            >{{ opt.label }}</a
+          >
         </li>
       </template>
     </ul>
@@ -15,8 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed, watch} from "vue";
-import type {IOption} from "./DropDown.type";
+import { ref, onMounted, computed, watch } from 'vue'
+import type { IOption } from './DropDown.type'
 
 const props = defineProps<{
   modelValue: string | number | undefined
@@ -48,12 +59,12 @@ const getSizeClass = computed(() => {
 const selectedValue = ref<IOption>({} as IOption)
 
 const selectOption = (opt: IOption) => {
-  selectedValue.value = opt;
-};
+  selectedValue.value = opt
+}
 
 const setInitSelect = () => {
   const { options } = props
-  options?.forEach(option => {
+  options?.forEach((option) => {
     if (option.checked) {
       selectedValue.value = option
     }
@@ -66,9 +77,12 @@ const setInitSelect = () => {
   emit('update:modelValue', selectedValue.value.value)
 }
 
-watch(() => selectedValue.value, () => {
-  emit('update:modelValue', selectedValue.value.value)
-})
+watch(
+  () => selectedValue.value,
+  () => {
+    emit('update:modelValue', selectedValue.value.value)
+  }
+)
 
 onMounted(() => {
   setInitSelect()
@@ -76,6 +90,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "DropDown";
-@import "../button/ButtonGroup";
+@import 'DropDown';
+@import '../button/ButtonGroup';
 </style>

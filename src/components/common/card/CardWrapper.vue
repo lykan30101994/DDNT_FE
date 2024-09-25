@@ -1,7 +1,9 @@
 <template>
   <div :class="['card-wrapper', isFixed ? 'fixed-wrapper' : '']">
-
-    <div v-if="title" :class="['card-header', cardHeaderClass]">
+    <div
+      v-if="title"
+      :class="['card-header', cardHeaderClass]"
+    >
       <span>{{ title }}</span>
     </div>
     <div :class="['card-body', cardBodyClass]">
@@ -11,21 +13,20 @@
 </template>
 
 <script lang="ts" setup>
-
 withDefaults(
-    defineProps<{
-      title?: string;
-      cardBodyClass?: string;
-      cardHeaderClass?: string;
-      isFixed?: boolean
-    }>(),
-    {
-      cardBodyClass: '',
-      cardHeaderClass: '',
-    }
-);
+  defineProps<{
+    title?: string
+    cardBodyClass?: string
+    cardHeaderClass?: string
+    isFixed?: boolean
+  }>(),
+  {
+    cardBodyClass: '',
+    cardHeaderClass: ''
+  }
+)
 </script>
 
 <style lang="scss" scoped>
-@import "./CardWrapper";
+@import './CardWrapper';
 </style>

@@ -7,7 +7,7 @@
           <td width="100px">Case {{ index }}</td>
           <td colspan="2">
             <input
-              v-model="formTestCase.test_description"
+              v-model="pattentTestCase.test_description"
               type="text"
               class="w-100 form-control"
             />
@@ -18,30 +18,34 @@
           <td width="100px"></td>
           <td colspan="2">
             <input
-              v-model="formTestCase.expected_result"
+              v-model="pattentTestCase.expected_result"
               type="text"
               class="w-100 form-control"
             />
           </td>
           <td width="300px">* EXPECTED RESULT</td>
         </tr>
-        <tr v-for="(item, index) of data" :key="index" class="align-center">
+        <tr
+          v-for="(item, index) of data"
+          class="align-center"
+          :key="index"
+        >
           <td width="100px">
             <input
-              v-model="modelCheckBox[`${item?.element_name}`]"
+              v-model="modelCheckBox[getKeyInput(item)]"
               type="checkbox"
               class="size-checkbox cursor-pointer mt-1"
             />
           </td>
           <td class="text-start">
-            <p>{{ item?.element_name }}</p>
+            <p>{{ getKeyInput(item) }}</p>
           </td>
           <td>
             <input
-              v-model="formTestCase[item?.element_name]"
-              :disabled="!modelCheckBox[`${item?.element_name}`]"
+              v-model="pattentTestCase[getKeyInput(item)]"
               type="text"
               class="w-100 form-control"
+              :disabled="!modelCheckBox[getKeyInput(item)]"
             />
           </td>
           <td width="300px"></td>
@@ -52,29 +56,67 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from 'vue'
+import type { ITableEvent } from '../../home.type'
 
-defineProps<{
-  data: IDataItem[];
-  index: number;
-}>();
+const props = defineProps<{
+  data: ITableEvent[]
+  index: number
+}>()
 
-const formTestCase = defineModel({ default: {} as ITestCaseItem });
-const modelCheckBox = ref<ITestCaseItem>({});
+const pattentTestCase = defineModel({ default: {} as ITestCaseItem })
+
+const modelCheckBox = ref<ITestCaseItem>({})
+
+const getKeyInput = (item: ITableEvent) => {
+  return `${item.type}::${item.c_element}::${item.selector}`
+}
+
+const initCheckBox = () => {
+  props.data?.forEach((item) => {
+    const key = getKeyInput(item)
+
+    if (pattentTestCase.value[key] || pattentTestCase.value[key] === '') {
+      modelCheckBox.value[key] = true
+    }
+  })
+}
+
+const initModel = () => {
+  pattentTestCase.value = {
+    ...pattentTestCase.value,
+    action: props.data[0].action,
+    action_element: props.data[0].action_element
+  }
+}
 
 watch(
   () => modelCheckBox.value,
   (newVal) => {
     Object.keys(newVal).forEach((key) => {
+      let isReset = false
+      const valuePattent = pattentTestCase.value[key]
+
       if (!newVal[key]) {
-        formTestCase.value[key] = "";
+        isReset = true
+      } else if (!valuePattent) {
+        isReset = true
       }
-    });
+
+      if (isReset) {
+        pattentTestCase.value[key] = ''
+      }
+    })
   },
   { deep: true }
-);
+)
+
+onMounted(() => {
+  initCheckBox()
+  initModel()
+})
 </script>
 
 <style lang="scss" scoped>
-@import "./FormTestCase.scss";
+@import './FormTestCase.scss';
 </style>
