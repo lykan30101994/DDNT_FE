@@ -175,12 +175,8 @@ const handleExportTestCase = () => {
   const normal: string[][] = []
   if (pattents) {
     const dataExport = convertLocalStorageToTestCase(pattents)
-    dataExport.abnormal.forEach((item: any) => {
-      abnormal.push(item)
-    })
-    dataExport.normal.forEach((item: any) => {
-      normal.push(item)
-    })
+    abnormal.push(...dataExport.abnormal)
+    normal.push(...dataExport.normal)
     const dataExample: ICategoryTemplate = {
       validation: convertValidationToArray(inputData),
       abnormal: abnormal,
@@ -194,7 +190,7 @@ const handleExportTestCase = () => {
 const convertLocalStorageToTestCase = (pattents: IPattentLocalStorage) => {
   const arrTestCase = {} as IPattentLocalStorage
   const pattentCombined = combine(pattents)
- 
+
   let index = 0
   for (const key in pattentCombined) {
     arrTestCase[key] = pattentCombined[key]?.map((item: ITestCaseItem) => {
