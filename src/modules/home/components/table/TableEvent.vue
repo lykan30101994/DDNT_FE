@@ -65,7 +65,8 @@ const props = defineProps<{
 const validateForm = ref(
   props.data.map((item, index) => {
     return {
-      title: item.type + '::' + item.c_element + ' ::' + item.selector
+      title: item.type + '::' + item.c_element + ' ::' + item.selector,
+      action_element: item.action_element 
     }
   }) as IValidate[]
 )

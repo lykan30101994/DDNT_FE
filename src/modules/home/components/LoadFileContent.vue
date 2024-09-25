@@ -178,20 +178,7 @@ const handleExportTestCase = () => {
   }
 
   const dataExample: ICategoryTemplate = {
-    validation: [
-      [
-        'TC00001',
-        '111',
-        'Step 1: ははははははあははははは希望',
-        '1111'
-      ],
-      [
-        'TC00002',
-        '222',
-        'Step 1: ははははははあははははは希望',
-        '222'
-      ]
-    ],
+    validation: convertValidationToArray(inputData),
     abnormal: [
       [
         'TC00010',
@@ -473,8 +460,9 @@ const handleExportTestCase = () => {
       ]
     ]
   }
+  convertValidationToArray(inputData);
 
-  ExcelUtils.writeWithTemplate(Template.TEST_CASE, dataExample, 'A,E,AC,AM')
+ ExcelUtils.writeWithTemplate(Template.TEST_CASE, dataExample, 'A,E,AC,AM')
 }
 
 const convertLocalStorageToTestCase = (pattents: IPattentLocalStorage) => {
@@ -541,6 +529,70 @@ const setDataFromLocalStorage = () => {
     dataMapTable.value = new Map(Object.entries(obj))
   }
 }
+// sample, sau khi lấy động thì xóa đi
+const inputData: any = {
+  doLogin: {
+    validation: [
+      {
+        action_element: "id::btn_login",
+        title: "text::id ::user_id",
+        required: { data_check: "", value: "", required: false },
+        max_length: { data_check: "2222", value: "22", max_length: false },
+        format: { data_check: "22222", value: "999", format: true }
+      },
+      {
+        action_element: "id::btn_login",
+        title: "password::id ::password",
+        required: { data_check: "22222", value: "", required: true },
+        max_length: { data_check: "2222", value: "2222", max_length: true },
+        format: { data_check: "22222", value: "999", format: false }
+      }
+    ]
+  }
+};
+
+const convertValidationToArray = (inputData: any): string[][] => {
+  const validation: string[][] = [];
+  let testCaseCounter = 1;
+
+  inputData.doLogin.validation.forEach((item: any) => {
+    const userId = item.title.split("::")[2].trim();
+    const actionElement = item.action_element;
+    const valueMaxlength = item?.max_length?.value;
+    const dataFormat = item?.format?.data_check;
+    const valueFormat = item?.format?.value;
+    
+    if (!item.required.required) {
+      validation.push([
+        `TC${String(testCaseCounter++).padStart(5, '0')}`,
+        translations.value.validateRequired(userId),
+        translations.value.testStepRequired(userId, actionElement),
+        translations.value.expectedResultRequired(userId),
+      ]);
+    }
+
+    if (!item.max_length.max_length) {
+      validation.push([
+        `TC${String(testCaseCounter++).padStart(5, '0')}`,
+        translations.value.validateMaxLength(userId, valueMaxlength),
+        translations.value.testStepMaxlenght(valueMaxlength, actionElement, dataFormat),
+        translations.value.expectedResultMaxLength(valueMaxlength),
+      ]);
+    }
+
+    if (!item.format.format) {
+      validation.push([
+        `TC${String(testCaseCounter++).padStart(5, '0')}`,
+        translations.value.expectedResultFormat(userId),
+        translations.value.testStepFormat(valueFormat, actionElement),
+        translations.value.expectedResultFormat(valueFormat),
+      ]);
+    }
+  });
+  console.log(validation);
+  return validation;
+};
+
 
 const changeLanguage = (lang: string) => {
   switch (lang.toString()) {

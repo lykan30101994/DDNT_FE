@@ -1,4 +1,5 @@
 interface IValidate {
+  action_element: string
   title?: string
   required: IRequired
   max_length: IMaxLength

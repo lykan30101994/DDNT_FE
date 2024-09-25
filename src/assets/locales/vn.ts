@@ -7,6 +7,10 @@ export default {
   // Test Step
   testStepRequired: (value: string, event: string) =>
     `Step1: Không nhập data vào item ${value} \n Step2: Click button ${event}`,
+  testStepMaxlenght: (value: string, event: string, data: string) =>
+    `Step1: Nhập data vào item ${value} là ${data}\n Step2: Click button ${event}`,
+  testStepFormat: (value: string, event: string) =>
+    `Step1: Nhập data vào item ${value} \n Step2: Click button ${event}`,
   // Expected Result
   expectedResultRequired: (item: string) => `Hiển thị message: Trường ${item} là trường bắt buộc`,
   expectedResultMaxLength: (value: string) => `Hiển thị message: Vui lòng nhập trong vòng ${value} ký tự`,
