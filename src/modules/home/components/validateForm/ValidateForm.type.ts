@@ -1,12 +1,26 @@
 interface IValidateForm {
   title?: string;
+  validation: IValidation
+}
+
+interface IValidation {
+  required: IRequired
+  max_length: IMaxLength
+  format: IFormat
+}
+interface IRequired {
   required?: boolean;
-  valueRequired?: string;
-  dataRequired?: string;
-  maxLength?: boolean;
-  valueMaxLength?: string;
-  dataMaxLength?: string;
+  data_required?: string;
+}
+
+interface IMaxLength {
+  max_length?: boolean;
+  value_max_length?: string;
+  data_max_length?: string;
+}
+
+interface IFormat {
   format?: boolean;
-  valueFormat?: string;
-  dataFormat?: string;
+  value_format?: string;
+  data_format?: string;
 }

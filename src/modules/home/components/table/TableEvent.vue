@@ -40,7 +40,6 @@ import TableTitle from "../../../../components/common/table/title/TableTitle.vue
 import Button from "@/components/common/button/Button.vue";
 import type { ITableEvent } from "@/modules/home/home.type";
 import Modal from "@/modules/home/components/Modal.vue";
-import type { IValidateForm } from "@/modules/home/components/validateForm/ValidateForm.type";
 const props = defineProps<{
   headers: IHeaderTable[][];
   data: ITableEvent[];

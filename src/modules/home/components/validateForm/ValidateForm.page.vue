@@ -15,7 +15,7 @@
     <div class="col-md-6">
       <label for="validationDefault02" class="form-label">DATA CHECK</label>
       <input
-        v-model="validateForm.dataRequired"
+        v-model="validateForm.validation.required.data_required"
         type="text"
         class="form-control"
         id="validationDefault02"
@@ -36,7 +36,7 @@
     <div class="col-md-4">
       <label for="validationDefault01" class="form-label">VALUE</label>
       <input
-        v-model="validateForm.valueMaxLength"
+        v-model="validateForm.validation.max_length.value_max_length"
         type="text"
         class="form-control"
         id="validationDefault01"
@@ -46,7 +46,7 @@
     <div class="col-md-6">
       <label for="validationDefault02" class="form-label">DATA CHECK</label>
       <input
-        v-model="validateForm.dataMaxLength"
+        v-model="validateForm.validation.max_length.data_max_length"
         type="text"
         class="form-control"
         id="validationDefault02"
@@ -67,7 +67,7 @@
     <div class="col-md-4">
       <label for="validationDefault01" class="form-label">VALUE</label>
       <select
-        v-model="validateForm.valueFormat"
+        v-model="validateForm.validation.format.value_format"
         id="dropdown"
         class="form-control"
         :disabled="arrChecked.isFormatChecked"
@@ -84,7 +84,7 @@
     <div class="col-md-6">
       <label for="validationDefault02" class="form-label">DATA CHECK</label>
       <input
-        v-model="validateForm.dataFormat"
+        v-model="validateForm.validation.format.data_format"
         type="text"
         class="form-control"
         id="validationDefault02"
@@ -98,7 +98,8 @@
 import { ref } from "vue";
 
 const validateForm = defineModel<IValidateForm>({
-  default: {} as IValidateForm
+  
+  default: {} as IValidateForm,
 });
 
 const options = ref([
@@ -116,33 +117,34 @@ const arrChecked = ref({
 
 const toggleInput = (type: string) => {
   const ischecked = arrChecked.value;
-validateForm
-  if (type === 'required') {
+  validateForm;
+  if (type === "required") {
     ischecked.isRequiredChecked = !ischecked.isRequiredChecked;
-    setDefaultValue('required', ischecked.isRequiredChecked)
-  } else if (type === 'maxlength') {
+    setDefaultValue("required", ischecked.isRequiredChecked);
+  } else if (type === "maxlength") {
     ischecked.isMaxLengthChecked = !ischecked.isMaxLengthChecked;
-    setDefaultValue('maxlength', ischecked.isMaxLengthChecked)
+    setDefaultValue("maxlength", ischecked.isMaxLengthChecked);
   } else {
     ischecked.isFormatChecked = !ischecked.isFormatChecked;
-    setDefaultValue('format', ischecked.isFormatChecked)
+    setDefaultValue("format", ischecked.isFormatChecked);
   }
 };
 
 const setDefaultValue = (title: string, value: boolean) => {
-    if(title==='required'){
-      validateForm.value.required = value
-      validateForm.value.dataRequired = ''
-    } else if(title === 'maxlength'){
-      validateForm.value.maxLength = value
-      validateForm.value.dataMaxLength = ''
-      validateForm.value.valueMaxLength = ''
-    }else{
-      validateForm.value.format = value
-      validateForm.value.dataFormat = ''
-      validateForm.value.valueFormat = ''
-    }
-}
+  const validate = validateForm.value.validation
+  if (title === "required") {
+    validate.required.required = value;
+    validate.required.data_required = "";
+  } else if (title === "maxlength") {
+    validate.max_length.max_length = value;
+    validate.max_length.data_max_length = "";
+    validate.max_length.value_max_length = "";
+  } else {
+    validate.format.format = value;
+    validate.format.data_format = "";
+    validate.format.value_format = "";
+  }
+};
 </script>
 
 <style></style>
