@@ -1,5 +1,5 @@
 export const Template = {
-  TEST_CASE: './test-template.xlsx'
+  TEST_CASE: './TEST_CASES_TEMPLATE.xlsx'
 }
 
 export const getInfoTemplate = (key: string) => {
@@ -8,14 +8,18 @@ export const getInfoTemplate = (key: string) => {
   switch (key) {
     case Template.TEST_CASE:
       info = {
-        validate: 7,
-        abnormal: 13,
-        normal: 19
+        start_row: 7,
+        category_write: ['validation', 'abnormal', 'normal'],
+        skip_row: 1,
+        row_available: 1
       }
   }
   return info
 }
 
 export interface IInfoTemplate {
-  [key: string]: any
+  start_row: number
+  category_write: string[]
+  skip_row: number
+  row_available: number
 }

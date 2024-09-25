@@ -2,10 +2,9 @@ import Excel from 'exceljs'
 import type { Cell, Row, Worksheet } from 'exceljs/index'
 import { BlobUtils } from '@/components/utils/blob-utils'
 import { getInfoTemplate } from '@/components/template/template'
+import { auto } from '@popperjs/core'
 export const ExcelUtils = {
   mergeCellRecaps: {},
-
-  infoTemplate: {},
 
   getWorkBookWithTemplate: async (path: string) => {
     try {
@@ -32,11 +31,20 @@ export const ExcelUtils = {
     })
   },
 
+  updateRowByIndex: async (worksheet: Worksheet, data: object[], index: number, cellInsert: number[]) => {
+    const rowUpdate = worksheet.getRow(index)
+    cellInsert.forEach((cell, index) => {
+      rowUpdate.getCell(cell).value = data[index]
+    })
+
+    rowUpdate.commit()
+  },
+
   insertNewRowInSheetWithFormat: async (
     worksheet: Worksheet,
     index: number,
     data: object[] = [],
-    cellInsert: string[]
+    cellInsert: number[]
   ) => {
     await ExcelUtils.reCapMergeCell(worksheet)
     await ExcelUtils.unMergeAllSheet(worksheet)
@@ -46,7 +54,9 @@ export const ExcelUtils = {
       newRow.getCell(cell).value = data[index]
     })
     await ExcelUtils.setStyleForRowByOldRow(newRow, previousRow)
-    await ExcelUtils.mergeCellByNewRow(worksheet, index)
+    await ExcelUtils.mergeCellByNewRow(worksheet, index, 1)
+
+    newRow.commit()
   },
 
   setStyleForRowByOldRow: async (row: Row, oldRow: Row) => {
@@ -58,59 +68,90 @@ export const ExcelUtils = {
     })
   },
 
-  mergeCellByNewRow: async (worksheet: Worksheet, indexNewRow: number) => {
+  mergeCellByNewRow: async (worksheet: Worksheet, indexNewRow: number, tag: number) => {
+    const previousCellMerges: any[] = []
+
     Object.entries(ExcelUtils.mergeCellRecaps).forEach(([key, value]) => {
       const index = value.top
       if (index < indexNewRow) {
+        if (index === indexNewRow - 1) {
+          previousCellMerges.push(value)
+        }
         worksheet.mergeCells(value)
       } else if (index >= indexNewRow) {
-        if (index === indexNewRow) {
-          worksheet.mergeCells(value)
+        if (index === indexNewRow && tag === -1) {
+          return
         }
-        const [start, end] = value.shortRange.split(':').map((cell) => {
+
+        const [start, end] = value.shortRange.split(':').map((cell: any) => {
           const col = cell.match(/[A-Z]+/)[0]
           const row = parseInt(cell.match(/\d+/)[0])
-          return `${col}${row + 1}`
+          return `${col}${row + tag}`
         })
         worksheet.mergeCells(`${start}:${end}`)
       }
     })
+
+    if (tag > 0) {
+      previousCellMerges?.forEach((mergeValue) => {
+        const [start, end] = mergeValue.shortRange.split(':').map((cell: string) => {
+          const col = cell?.match(/[A-Z]+/)?.[0]
+          const row = parseInt(cell?.match(/\d+/)?.[0] ?? '')
+          return `${col}${row + 1}`
+        })
+        worksheet.mergeCells(`${start}:${end}`)
+      })
+    }
   },
 
-  setInfoTemplate: (key: string) => {
-    ExcelUtils.infoTemplate = getInfoTemplate(key)
-  },
-
-  writeWithTemplate: async (template: string, cellInsert: string) => {
+  writeWithTemplate: async (template: string, data: ICategoryTemplate, cellInsert: string) => {
     if (!template) {
       throw new Error('Template is empty...')
     }
 
-    ExcelUtils.setInfoTemplate(template)
+    const infoTemplate = getInfoTemplate(template)
     const workbook = await ExcelUtils.getWorkBookWithTemplate(template)
-    const worksheet = workbook?.worksheets[0]
+    const worksheet = workbook?.getWorksheet('テストケース')
+
     if (!worksheet) {
       throw new Error('Worksheet not found...')
     }
 
-    const columns = 'A,E,AC,AM'.split(',')
-
+    const columns = cellInsert.split(/[\\,|\s+]/g)
     const columnNumbers = columns.map((column) => columnToNumber(column))
+    const categoryWrite = infoTemplate.category_write
+    let startRowWrite = infoTemplate.start_row
 
-    await ExcelUtils.insertNewRowInSheetWithFormat(
-      worksheet,
-      9,
-      [
-        'TC00001',
-        111,
-        'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor',
-        1111
-      ],
-      columnNumbers
-    )
+    if (categoryWrite) {
+      for (let i in categoryWrite) {
+        const category = categoryWrite[i]
+        const dataWrites = data?.[category]
+        let skip = infoTemplate.skip_row
+        let rowAvailable = infoTemplate.row_available
 
-    const data = await workbook.xlsx.writeBuffer()
-    BlobUtils.downloadFile([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        for (let i = 0; i < dataWrites?.length; ) {
+          const row = dataWrites?.[i]
+
+          if (skip) {
+            skip--
+          } else {
+            if (rowAvailable-- > 0) {
+              await ExcelUtils.updateRowByIndex(worksheet, row, startRowWrite, columnNumbers)
+            } else {
+              await ExcelUtils.insertNewRowInSheetWithFormat(worksheet, startRowWrite, row, columnNumbers)
+            }
+            i++
+          }
+
+          startRowWrite++
+        }
+      }
+    }
+
+    const buffer = await workbook?.xlsx.writeBuffer()
+    if (buffer) {
+      BlobUtils.downloadFile([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    }
   }
 }
 
@@ -124,4 +165,11 @@ export const columnToNumber = (column: string) => {
   }
 
   return number
+}
+
+export interface ICategoryTemplate {
+  validation: any[][]
+  abnormal: any[][]
+  normal: any[][]
+  [key: string]: any[][]
 }
