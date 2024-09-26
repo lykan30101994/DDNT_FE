@@ -65,14 +65,11 @@ import jp from '../../../assets/locales/jp'
 import type { IButton } from '@/components/common/button/ButtonGroup.type'
 import type { IOption } from '@/components/common/dropdown/DropDown.type'
 import type { IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
-import {
-  type ICategoryGroupTemplate,
-  type ICategoryTemplate,
-  useExcel
-} from '@/components/utils/excel-utils'
+import { useExcel } from '@/components/utils/excel-utils'
 import { Template } from '@/components/template/template'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
+const keyNormal = [ABNORMAL, NORMAL]
 
 const file = ref<File | null>(null)
 const headers = ref<string[]>([])
@@ -80,6 +77,7 @@ const tableData = ref<string[][]>([])
 const selectedLanguage = ref<string | number | undefined>()
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
 const translations = ref(jp)
+const indexTC = ref<number>(1)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 
 const { writeWithTemplate } = useExcel()
@@ -179,74 +177,41 @@ const handleExportTestCase = () => {
   const pattents = pattentLocalStorage.get()
 
   if (pattents) {
-    const testCaseValidate = convertValidationToArray(inputData)
-    const testCaseNormal = converTestCaseNormal(pattents, testCaseValidate?.length)
+    const testCase = converTestCase(pattents)
+    resetIndexTC()
 
-    const dataExample: ICategoryTemplate = {
-      validation: convertValidationToArray(pattents),
-      abnormal: testCaseNormal[ABNORMAL],
-      normal: testCaseNormal[NORMAL]
-    }
-
-    const example: ICategoryTemplate = {
-      validation: [
-       ['TC00001', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
-      ],
-      abnormal: [
-      ['TC00002', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
-      ],
-      normal: [
-      ['TC00003', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
-      ['TC00004', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
-      ['TC0000', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
-      ]
-    }
-
-    const mapCategory: ICategoryGroupTemplate = {
-      "showHidePassword - onclick - class::icon icon-eye password-indictor": example,
-      "doLogin - onclick - id::btn_login": example,
-      "doSave - onsave - id::btn_save": example
-    }
-
-    writeWithTemplate(Template.TEST_CASE, mapCategory, 'A,E,AC,AM')
+    writeWithTemplate(Template.TEST_CASE, testCase, 'A,E,AC,AM')
   }
 }
 
-const converTestCaseNormal = (pattents: IPattentLocalStorage, indexStart: number) => {
+const converTestCase = (pattents: IPattentLocalStorage) => {
   const arrTestCase = {} as IPattentLocalStorage
-  const pattentCombined = combineNormal(pattents)
-  let index = indexStart
-  for (const key in pattentCombined) {
-    arrTestCase[key] = pattentCombined[key]?.map((item: ITestCaseItem) => {
-      index++
-      return renderTestCase(item, index)
-    })
+  for (const category in pattents) {
+    arrTestCase[category] = convertTestCaseByCategory(pattents[category])
   }
 
   return arrTestCase
 }
 
-const combineNormal = (pattents: IPattentLocalStorage) => {
-  const arrResult = { [VALIDATTION]: [],[ABNORMAL]: [], [NORMAL]: [] } as IPattentLocalStorage
+const convertTestCaseByCategory = (pattentsCategory: any) => {
+  const objTestcase = {} as IPattentLocalStorage
 
-  for (const key in pattents) {
-    if (pattents[key][VALIDATTION]) {
-      arrResult[VALIDATTION].push(...pattents[key][VALIDATTION])
-    }
-    if (pattents[key][ABNORMAL]) {
-      arrResult[ABNORMAL].push(...pattents[key][ABNORMAL])
-    }
-    if (pattents[key][NORMAL]) {
-      arrResult[NORMAL].push(...pattents[key][NORMAL])
+  for (const key in pattentsCategory) {
+    if (keyNormal.includes(key)) {
+      objTestcase[key] = pattentsCategory[key]?.map((item: ITestCaseItem) => {
+        return renderTestCaseNormal(item)
+      })
+    } else {
+      objTestcase[key] = renderTestCaseValidation(pattentsCategory[key])
     }
   }
 
-  return arrResult
+  return objTestcase
 }
 
-const renderTestCase = (input: any, index: number) => {
+const renderTestCaseNormal = (input: any) => {
   const { test_description, expected_result, action, action_element, ...inputs } = input
-  const no = `TC${String(index).padStart(5, '0')}`
+  const no = `TC${String(indexTC.value).padStart(5, '0')}`
   let stepCounter = 1
   let testSteps = ''
 
@@ -258,10 +223,19 @@ const renderTestCase = (input: any, index: number) => {
 
   testSteps += translations.value.testStepSubmit(stepCounter, action_element)
   stepCounter++
-  const result = [no, test_description, testSteps.trim(), expected_result]
+  increaseIndexTC()
 
-  return result
+  return [no, test_description, testSteps.trim(), expected_result]
 }
+
+const increaseIndexTC = () => {
+  indexTC.value++
+}
+
+const resetIndexTC = () => {
+  indexTC.value = 0
+}
+
 const setDataFromLocalStorage = () => {
   const dataFromStore = localStorage.getItem(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
   if (dataFromStore) {
@@ -269,64 +243,48 @@ const setDataFromLocalStorage = () => {
     dataMapTable.value = new Map(Object.entries(obj))
   }
 }
-// sample, sau khi lấy động thì xóa đi
-const inputData: any = {
-  doLogin: {
-    validation: [
-      {
-        action_element: 'id::btn_login',
-        title: 'text::id ::user_id',
-        required: { data_check: '', value: '', required: false },
-        max_length: { data_check: '2222', value: '22', max_length: false },
-        format: { data_check: '22222', value: '999', format: true }
-      },
-      {
-        action_element: 'id::btn_login',
-        title: 'password::id ::password',
-        required: { data_check: '22222', value: '', required: true },
-        max_length: { data_check: '2222', value: '2222', max_length: true },
-        format: { data_check: '22222', value: '999', format: false }
-      }
-    ]
-  }
-}
 
-const convertValidationToArray = (inputData: any): string[][] => {
+const renderTestCaseValidation = (inputData: any): string[][] => {
   const validation: string[][] = []
-  let testCaseCounter = 1
 
-  combineNormal(inputData)[VALIDATTION].forEach((item: any) => {
-    const userId = item.title.split('::')[2].trim()
+  inputData?.forEach((item: any) => {
+    const element = item.title.split('::')[2].trim()
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
+    const dataMaxlength = item?.max_length?.data_check
     const dataFormat = item?.format?.data_check
     const valueFormat = item?.format?.value
 
-    if (!item.required.required) {
+    if (!item.required.is_checked) {
       validation.push([
-        `TC${String(testCaseCounter++).padStart(5, '0')}`,
-        translations.value.validateRequired(userId),
-        translations.value.testStepRequired(userId, actionElement),
-        translations.value.expectedResultRequired(userId)
+        `TC${String(indexTC.value).padStart(5, '0')}`,
+        translations.value.validateRequired(element),
+        translations.value.testStepRequired(element, actionElement),
+        translations.value.expectedResultRequired(element)
       ])
+      increaseIndexTC()
     }
 
-    if (!item.max_length.max_length) {
+    if (!item.max_length.is_checked) {
       validation.push([
-        `TC${String(testCaseCounter++).padStart(5, '0')}`,
-        translations.value.validateMaxLength(userId, valueMaxlength),
-        translations.value.testStepMaxlenght(valueMaxlength, actionElement, dataFormat),
+        `TC${String(indexTC.value).padStart(5, '0')}`,
+        translations.value.validateMaxLength(element, valueMaxlength),
+        translations.value.testStepMaxlenght(element, actionElement, dataMaxlength),
         translations.value.expectedResultMaxLength(valueMaxlength)
       ])
+
+      increaseIndexTC()
     }
 
-    if (!item.format.format) {
+    if (!item.format.is_checked) {
       validation.push([
-        `TC${String(testCaseCounter++).padStart(5, '0')}`,
-        translations.value.validateFormat(userId, valueFormat),
-        translations.value.testStepFormat(userId, valueFormat, actionElement),
+        `TC${String(indexTC.value).padStart(5, '0')}`,
+        translations.value.validateFormat(element, valueFormat),
+        translations.value.testStepFormat(element, dataFormat, actionElement),
         translations.value.expectedResultFormat(valueFormat)
       ])
+
+      increaseIndexTC()
     }
   })
   return validation

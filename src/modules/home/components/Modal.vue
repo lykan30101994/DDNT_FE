@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import FormTestCase from './formTestCase/FormTestCase.vue'
 import ValidateFrom from './validateForm/ValidateForm.page.vue'
 import { CONSTANTS } from '@/components/constant'
@@ -139,25 +139,41 @@ const toggleModal = () => {
   emit('toggleModal')
 }
 
+const getKeyCategory = () => {
+  const itemFirstData = props.dataForm[0]
+  return `${category} - ${itemFirstData.action} - ${itemFirstData.action_element}`
+}
+
 const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
   const data = pattentLocalStorage.get() || {}
+  const key = getKeyCategory()
 
   Object.keys(pattents).forEach((key) => {
-    pattents[key] = pattents[key].filter((item) => {
-      return Object.values(item).some((value) => value)
-    })
+    pattents[key] = pattents[key]
+      .filter((item) => {
+        return Object.values(item).some((value) => value)
+      })
+      .map((item) => ({
+        ...item,
+        action: props.dataForm[0].action,
+        action_element: props.dataForm[0].action_element
+      }))
   })
 
   return {
     ...data,
-    [category]: {
+    [key]: {
+      [VALIDATTION]: [],
+      [ABNORMAL]: [],
+      [NORMAL]: [],
       ...pattents
     }
   }
 }
 
 const convertFromLocalStorageToPattent = (pattents: any) => {
-  return pattents?.[category]
+  const keyCategory = getKeyCategory()
+  return pattents?.[keyCategory]
 }
 
 const initializeField = (field: ICommonValidate) => {

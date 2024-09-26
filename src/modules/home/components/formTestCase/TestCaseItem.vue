@@ -86,16 +86,11 @@ watch(
   () => modelCheckBox.value,
   (newVal) => {
     Object.keys(newVal).forEach((key) => {
-      let isReset = false
       const valuePattent = pattentTestCase.value[key]
 
       if (!newVal[key]) {
-        isReset = true
+        delete pattentTestCase.value[key]
       } else if (!valuePattent) {
-        isReset = true
-      }
-
-      if (isReset) {
         pattentTestCase.value[key] = ''
       }
     })
