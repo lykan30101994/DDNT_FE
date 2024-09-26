@@ -193,10 +193,9 @@ const initValue = () => {
 }
 
 const initvalidate = () => {
-  if(!pattentTestCase.value[VALIDATTION]) {
+  if (!pattentTestCase.value[VALIDATTION]) {
     setDefaultValidate()
-  }
-  else {
+  } else {
     validateForm.value = pattentTestCase.value[VALIDATTION]
   }
 }

@@ -65,7 +65,11 @@ import jp from '../../../assets/locales/jp'
 import type { IButton } from '@/components/common/button/ButtonGroup.type'
 import type { IOption } from '@/components/common/dropdown/DropDown.type'
 import type { IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
-import { ExcelUtils, type ICategoryTemplate } from '@/components/utils/excel-utils'
+import {
+  type ICategoryGroupTemplate,
+  type ICategoryTemplate,
+  useExcel
+} from '@/components/utils/excel-utils'
 import { Template } from '@/components/template/template'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
@@ -77,6 +81,8 @@ const selectedLanguage = ref<string | number | undefined>()
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
 const translations = ref(jp)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
+
+const { writeWithTemplate } = useExcel()
 
 const optionLanguage: IOption[] = [
   {
@@ -182,9 +188,27 @@ const handleExportTestCase = () => {
       normal: testCaseNormal[NORMAL]
     }
 
-    console.log(dataExample)
+    const example: ICategoryTemplate = {
+      validation: [
+       ['TC00001', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
+      ],
+      abnormal: [
+      ['TC00002', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
+      ],
+      normal: [
+      ['TC00003', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
+      ['TC00004', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
+      ['TC0000', '111', 'Step 1: Nhập item password là 1111\nStep 2: Click button class::icon icon-eye password-indictor', '1111'],
+      ]
+    }
 
-    ExcelUtils.writeWithTemplate(Template.TEST_CASE, dataExample, 'A,E,AC,AM')
+    const mapCategory: ICategoryGroupTemplate = {
+      "showHidePassword - onclick - class::icon icon-eye password-indictor": example,
+      "doLogin - onclick - id::btn_login": example,
+      "doSave - onsave - id::btn_save": example
+    }
+
+    writeWithTemplate(Template.TEST_CASE, mapCategory, 'A,E,AC,AM')
   }
 }
 
