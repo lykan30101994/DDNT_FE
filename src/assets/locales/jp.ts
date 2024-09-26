@@ -3,7 +3,7 @@ export default {
   validateMaxLength: (item: string, value: number) => `${item}の最大長 > ${value}を確認すする`,
   validateFormat: (item: string, value: string) => `${item}のフォーマット${value}を確認する`,
   testStepRequired: (value: string, event: string) =>
-    `ステップ1: ア${value} にデータを入力しない \n ステップ2: ボタン ${event} をクリックする`,
+    `ステップ1: ${value} にデータを入力しない \n ステップ2: ボタン ${event} をクリックする`,
   testStepMaxlenght: (value: string, event: string, data: string) =>
     `ステップ1:  ${value} にデータを入力するのは ${data}\n ステップ2: ボタン ${event} をクリックする`,
   testStepFormat: (item: string, value: string, event: string) =>
