@@ -1,13 +1,13 @@
 export default {
-  validateRequired: (item: string) => `必須項目${item}を確認してください`,
-  validateMaxLength: (item: string, value: number) => `${item}の最大長 > ${value}を確認してください`,
-  validateFormat: (item: string, value: string) => `${item}のフォーマット${value}を確認してください`,
+  validateRequired: (item: string) => `必須項目${item}を確認する`,
+  validateMaxLength: (item: string, value: number) => `${item}の最大長 > ${value}を確認すする`,
+  validateFormat: (item: string, value: string) => `${item}のフォーマット${value}を確認する`,
   testStepRequired: (value: string, event: string) =>
-    `ステップ1: アイテム ${value} にデータを入力しない \n ステップ2: ボタン ${event} をクリックする`,
+    `ステップ1: ア${value} にデータを入力しない \n ステップ2: ボタン ${event} をクリックする`,
   testStepMaxlenght: (value: string, event: string, data: string) =>
-    `ステップ1: アイテム ${value} にデータを入力するのは ${data}\n ステップ2: ボタン ${event} をクリックする`,
-  testStepFormat: (value: string, event: string) =>
-    `ステップ1: アイテム ${value} にデータを入力します \n ステップ2: ボタン ${event} をクリックする`,
+    `ステップ1:  ${value} にデータを入力するのは ${data}\n ステップ2: ボタン ${event} をクリックする`,
+  testStepFormat: (item: string, value: string, event: string) =>
+    `ステップ1: ${item} にデータを入力するのは ${value}\n ステップ2: ボタン ${event} をクリックする`,
   testStepCommon: (step: number, item: string, value: string) =>
     `Step${step}: Nhập data vào item ${item} với giá trị là: ${value}\n`,
   testStepSubmit: (step: number, element: string) => `Step ${step}: Click button ${element}\n`,

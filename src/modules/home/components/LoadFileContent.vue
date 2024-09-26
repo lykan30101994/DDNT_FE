@@ -296,8 +296,8 @@ const convertValidationToArray = (inputData: any): string[][] => {
     if (!item.format.format) {
       validation.push([
         `TC${String(testCaseCounter++).padStart(5, '0')}`,
-        translations.value.expectedResultFormat(userId),
-        translations.value.testStepFormat(valueFormat, actionElement),
+        translations.value.validateFormat(userId, valueFormat),
+        translations.value.testStepFormat(userId, valueFormat, actionElement),
         translations.value.expectedResultFormat(valueFormat)
       ])
     }

@@ -1,13 +1,13 @@
 export default {
-  validateRequired: (item: string) => `Kiểm tra bắt buộc cho mục ${item}`,
+  validateRequired: (item: string) => `Check required ${item}`,
   validateMaxLength: (item: string, value: number) => `Check max length > ${value} of item ${item}`,
   validateFormat: (item: string, value: string) => `Check format ${value} of item ${item}`,
-  testStepRequired: (value: string, event: string) =>
-    `Step 1: Do not enter data into item ${value} \n Step 2: Click button ${event}`,
-  testStepMaxlenght: (value: string, event: string, data: string) =>
-    `Step 1: Enter data into item ${value} is ${data} \n Step 2: Click button ${event}`,
-  testStepFormat: (value: string, event: string) =>
-    `Step 1: Enter data into item ${value} \n Step 2: Click button ${event}`,
+  testStepRequired: (item: string, event: string) =>
+    `Step 1: Do not enter data into item ${item} \n Step 2: Click button ${event}`,
+  testStepMaxlenght: (item: string, event: string, data: string) =>
+    `Step 1: Enter data into item ${item} is ${data} \n Step 2: Click button ${event}`,
+  testStepFormat: (item: string, value: string, event: string) =>
+    `Step 1: Enter data into item ${item}　is ${value}\n Step 2: Click button ${event}`,
   testStepCommon: (step: number, item: string, value: string) =>
     `Step${step}: Nhập data vào item ${item} với giá trị là: ${value}\n`,
   testStepSubmit: (step: number, element: string) => `Step ${step}: Click button ${element}\n`,

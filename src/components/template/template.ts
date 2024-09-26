@@ -1,5 +1,5 @@
 export const Template = {
-  TEST_CASE: './TEST_CASES_TEMPLATE.xlsx'
+  TEST_CASE: '/TEST_CASES_TEMPLATE.xlsx'
 }
 
 export const getInfoTemplate = (key: string) => {
