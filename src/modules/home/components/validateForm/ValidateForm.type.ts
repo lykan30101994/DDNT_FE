@@ -1,24 +1,13 @@
 interface IValidate {
-  action_element: string
+  action_element?: string
   title?: string
-  required: IRequired
-  max_length: IMaxLength
-  format: IFormat
+  required: ICommonValidate
+  max_length: ICommonValidate
+  format: ICommonValidate
 }
 
-interface IRequired {
-  required?: boolean
-  data_check?: string
-}
-
-interface IMaxLength {
-  max_length?: boolean
-  value?: string
-  data_check?: string
-}
-
-interface IFormat {
-  format?: boolean
+interface ICommonValidate {
+  is_checked?: boolean
   value?: string
   data_check?: string
 }

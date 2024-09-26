@@ -4,7 +4,7 @@
     <div class="col-md-6">
       <div class="form-check">
         <input
-          :checked="!validateForm.required.required"
+          :checked="!validateForm.required.is_checked"
           class="form-check-input"
           type="checkbox"
           id="invalidCheck1"
@@ -35,7 +35,7 @@
     <div class="col-md-2">
       <div class="form-check">
         <input
-          :checked="!validateForm.max_length.max_length"
+          :checked="!validateForm.max_length.is_checked"
           class="form-check-input"
           type="checkbox"
           id="invalidCheck2"
@@ -80,7 +80,7 @@
     <div class="col-md-2">
       <div class="form-check">
         <input
-          :checked="!validateForm.format.format"
+          :checked="!validateForm.format.is_checked"
           class="form-check-input"
           type="checkbox"
           id="invalidCheck3"
@@ -149,9 +149,9 @@ const options = ref([
 const valid = validateForm.value
 
 const arrChecked = ref({
-  isRequiredChecked: valid.required.required,
-  isMaxLengthChecked: valid.max_length.max_length,
-  isFormatChecked: valid.format.format
+  isRequiredChecked: valid.required.is_checked,
+  isMaxLengthChecked: valid.max_length.is_checked,
+  isFormatChecked: valid.format.is_checked
 })
 
 const toggleInput = (type: string) => {
@@ -173,14 +173,14 @@ const setDefaultValue = (title: string, value: boolean) => {
   const valid = validateForm.value
 
   if (title === 'required') {
-    valid.required.required = value
+    valid.required.is_checked = value
     valid.required.data_check = ''
   } else if (title === 'maxlength') {
-    valid.max_length.max_length = value
+    valid.max_length.is_checked = value
     valid.max_length.data_check = ''
     valid.max_length.value = ''
   } else {
-    valid.format.format = value
+    valid.format.is_checked = value
     valid.format.data_check = ''
     valid.format.value = ''
   }

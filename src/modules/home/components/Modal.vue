@@ -47,10 +47,10 @@
 
             <div v-if="activeTab === 'tab1'">
               <template
-                v-for="(item, idx) in dataValidateForm"
+                v-for="(item, idx) in validateForm"
                 :key="idx"
               >
-                <ValidateFrom v-model="dataValidateForm[idx]" />
+                <ValidateFrom v-model="validateForm[idx]" />
               </template>
             </div>
             <div v-else-if="activeTab === 'tab2'">
@@ -113,15 +113,15 @@ const activeTab = ref('tab1')
 const switchTab = (tab: string) => {
   activeTab.value = tab
 }
-
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 
 const category = props.dataForm?.[0]?.category
-const { ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
+const { ABNORMAL, NORMAL, VALIDATTION } = CONSTANTS.TAB_PATTENT
 
 const pattentTestCase = ref<IPattentTestCase>({})
+const validateForm = ref(props.dataValidateForm as any)
 
-const handleUpdatePattent = (type: string, pattent: ITestCaseItem[]) => {
+const handleUpdatePattent = (type: string, pattent: any) => {
   pattentTestCase.value = {
     ...pattentTestCase.value,
     [type]: pattent
@@ -129,6 +129,7 @@ const handleUpdatePattent = (type: string, pattent: ITestCaseItem[]) => {
 }
 
 const save = () => {
+  handleUpdatePattent(CONSTANTS.TAB_PATTENT.VALIDATTION, validateForm.value)
   const dataSave = convertBeforeSaveLocalStorage(pattentTestCase.value)
   pattentLocalStorage.set(dataSave)
   toggleModal()
@@ -142,15 +143,9 @@ const convertBeforeSaveLocalStorage = (pattents: IPattentTestCase) => {
   const data = pattentLocalStorage.get() || {}
 
   Object.keys(pattents).forEach((key) => {
-    pattents[key] = pattents[key]
-      .filter((item) => {
-        return Object.values(item).some((value) => value)
-      })
-      .map((item) => ({
-        ...item,
-        action: props.dataForm[0]?.action,
-        action_element: props.dataForm[0]?.action_element
-      }))
+    pattents[key] = pattents[key].filter((item) => {
+      return Object.values(item).some((value) => value)
+    })
   })
 
   return {
@@ -165,7 +160,7 @@ const convertFromLocalStorageToPattent = (pattents: any) => {
   return pattents?.[category]
 }
 
-const initializeField = (field: IRequired | IMaxLength | IFormat) => {
+const initializeField = (field: ICommonValidate) => {
   return {
     data_check: '',
     value: '',
@@ -174,23 +169,22 @@ const initializeField = (field: IRequired | IMaxLength | IFormat) => {
 }
 
 const setDefaultValidate = () => {
-  props.dataValidateForm.forEach((item) => {
+  validateForm.value.forEach((item: IValidate) => {
     const valid = item || (item = {} as IValidate)
 
-    valid.required = initializeField(valid.required) as IRequired
-    valid.required.required = true
+    valid.required = initializeField(valid.required) as ICommonValidate
+    valid.required.is_checked = true
 
-    valid.max_length = initializeField(valid.max_length) as IMaxLength
-    valid.max_length.max_length = true
+    valid.max_length = initializeField(valid.max_length) as ICommonValidate
+    valid.max_length.is_checked = true
 
-    valid.format = initializeField(valid.format) as IFormat
-    valid.format.format = true
+    valid.format = initializeField(valid.format) as ICommonValidate
+    valid.format.is_checked = true
   })
 }
 
 const initValue = () => {
   const pattents = pattentLocalStorage.get()
-
   if (pattents) {
     pattentTestCase.value = {
       ...convertFromLocalStorageToPattent(pattents)
@@ -198,10 +192,18 @@ const initValue = () => {
   }
 }
 
+const initvalidate = () => {
+  if(!pattentTestCase.value[VALIDATTION]) {
+    setDefaultValidate()
+  }
+  else {
+    validateForm.value = pattentTestCase.value[VALIDATTION]
+  }
+}
+
 onMounted(() => {
   initValue()
-  setDefaultValidate()
-  console.log(props.dataValidateForm)
+  initvalidate()
 })
 </script>
 

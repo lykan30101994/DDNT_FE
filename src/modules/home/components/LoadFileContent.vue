@@ -177,7 +177,7 @@ const handleExportTestCase = () => {
     const testCaseNormal = converTestCaseNormal(pattents, testCaseValidate?.length)
 
     const dataExample: ICategoryTemplate = {
-      validation: convertValidationToArray(inputData),
+      validation: convertValidationToArray(pattents),
       abnormal: testCaseNormal[ABNORMAL],
       normal: testCaseNormal[NORMAL]
     }
@@ -203,9 +203,12 @@ const converTestCaseNormal = (pattents: IPattentLocalStorage, indexStart: number
 }
 
 const combineNormal = (pattents: IPattentLocalStorage) => {
-  const arrResult = { [ABNORMAL]: [], [NORMAL]: [] } as IPattentLocalStorage
+  const arrResult = { [VALIDATTION]: [],[ABNORMAL]: [], [NORMAL]: [] } as IPattentLocalStorage
 
   for (const key in pattents) {
+    if (pattents[key][VALIDATTION]) {
+      arrResult[VALIDATTION].push(...pattents[key][VALIDATTION])
+    }
     if (pattents[key][ABNORMAL]) {
       arrResult[ABNORMAL].push(...pattents[key][ABNORMAL])
     }
@@ -268,7 +271,7 @@ const convertValidationToArray = (inputData: any): string[][] => {
   const validation: string[][] = []
   let testCaseCounter = 1
 
-  inputData.doLogin.validation.forEach((item: any) => {
+  combineNormal(inputData)[VALIDATTION].forEach((item: any) => {
     const userId = item.title.split('::')[2].trim()
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
