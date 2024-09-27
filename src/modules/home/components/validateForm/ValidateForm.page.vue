@@ -7,12 +7,12 @@
           :checked="!validateForm.required.is_checked"
           class="form-check-input"
           type="checkbox"
-          id="invalidCheck1"
+          :id="`invalidRequired${index}`"
           @click="toggleInput('required')"
         />
         <label
           class="form-check-label"
-          for="invalidCheck1"
+          :for="`invalidRequired${index}`"
         >
           REQUIRED
         </label>
@@ -20,7 +20,7 @@
     </div>
     <div class="col-md-6">
       <label
-        for="validationDefault02"
+        :for="`dataCheckRequired${index}`"
         class="form-label"
         >DATA CHECK</label
       >
@@ -28,7 +28,7 @@
         v-model="validateForm.required.data_check"
         type="text"
         class="form-control"
-        id="validationDefault02"
+        :id="`dataCheckRequired${index}`"
         :disabled="arrChecked.isRequiredChecked"
       />
     </div>
@@ -38,12 +38,12 @@
           :checked="!validateForm.max_length.is_checked"
           class="form-check-input"
           type="checkbox"
-          id="invalidCheck2"
+          :id="`invalidMaxLength${index}`"
           @click="toggleInput('maxlength')"
         />
         <label
           class="form-check-label"
-          for="invalidCheck2"
+          :for="`invalidMaxLength${index}`"
         >
           MAXLENGTH
         </label>
@@ -51,21 +51,21 @@
     </div>
     <div class="col-md-4">
       <label
-        for="validationDefault01"
+        :for="`valueMaxLength${index}`"
         class="form-label"
         >VALUE</label
       >
       <input
         v-model="validateForm.max_length.value"
-        type="text"
+        type="number"
         class="form-control"
-        id="validationDefault01"
+        :id="`valueMaxLength${index}`"
         :disabled="arrChecked.isMaxLengthChecked"
       />
     </div>
     <div class="col-md-6">
       <label
-        for="validationDefault02"
+        :for="`dataCheckMaxLength${index}`"
         class="form-label"
         >DATA CHECK</label
       >
@@ -73,7 +73,7 @@
         v-model="validateForm.max_length.data_check"
         type="text"
         class="form-control"
-        id="validationDefault02"
+        :id="`dataCheckMaxLength${index}`"
         :disabled="arrChecked.isMaxLengthChecked"
       />
     </div>
@@ -83,12 +83,12 @@
           :checked="!validateForm.format.is_checked"
           class="form-check-input"
           type="checkbox"
-          id="invalidCheck3"
+          :id="`invalidFormat${index}`"
           @click="toggleInput('format')"
         />
         <label
           class="form-check-label"
-          for="invalidCheck3"
+          :for="`invalidFormat${index}`"
         >
           FORMAT
         </label>
@@ -96,14 +96,14 @@
     </div>
     <div class="col-md-4">
       <label
-        for="validationDefault01"
+        :for="`valueFormat${index}`"
         class="form-label"
         >VALUE</label
       >
       <select
         v-model="validateForm.format.value"
-        id="dropdown"
         class="form-control"
+        :id="`valueFormat${index}`"
         :disabled="arrChecked.isFormatChecked"
       >
         <option
@@ -117,7 +117,7 @@
     </div>
     <div class="col-md-6">
       <label
-        for="validationDefault02"
+        :for="`dataCheckFormat${index}`"
         class="form-label"
         >DATA CHECK</label
       >
@@ -125,7 +125,7 @@
         v-model="validateForm.format.data_check"
         type="text"
         class="form-control"
-        id="validationDefault02"
+        :id="`dataCheckFormat${index}`"
         :disabled="arrChecked.isFormatChecked"
       />
     </div>
@@ -134,6 +134,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+
+defineProps<{
+  index: number
+}>()
 
 const validateForm = defineModel<IValidate>({
   default: {} as IValidate
@@ -174,7 +178,7 @@ const setDefaultValue = (title: string, value: boolean) => {
 
   if (title === 'required') {
     valid.required.is_checked = value
-    valid.required.data_check = ''
+    valid.required.data_check = !value ? 'blank' : ''
   } else if (title === 'maxlength') {
     valid.max_length.is_checked = value
     valid.max_length.data_check = ''

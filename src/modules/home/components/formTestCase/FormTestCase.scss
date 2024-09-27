@@ -22,3 +22,25 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+.label-required {
+  position: relative;
+
+  p {
+    position: absolute;
+    top: -5px;
+    font-size: 24px;
+    color: red;
+    font-weight: bold;
+    margin-top: auto;
+  }
+}
+
+.input-required {
+  border: 1px solid red;
+}
+
+.text-required {
+  text-align: left;
+  color: red;
+}

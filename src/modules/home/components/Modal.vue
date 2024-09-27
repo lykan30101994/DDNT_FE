@@ -50,7 +50,7 @@
                 v-for="(item, idx) in validateForm"
                 :key="idx"
               >
-                <ValidateFrom v-model="validateForm[idx]" />
+                <ValidateFrom v-model="validateForm[idx]" :index="idx" />
               </template>
             </div>
             <div v-else-if="activeTab === 'tab2'">
@@ -58,6 +58,9 @@
                 :type="ABNORMAL"
                 :data="dataForm"
                 :pattents="pattentTestCase[ABNORMAL]"
+                :ls-required="fieldRequired"
+                :required-key="requiredKey"
+                :is-click-save="clickedSave"
                 @update-pattent="handleUpdatePattent"
               />
             </div>
@@ -66,6 +69,9 @@
                 :type="NORMAL"
                 :data="dataForm"
                 :pattents="pattentTestCase[NORMAL]"
+                :ls-required="fieldRequired"
+                :required-key="requiredKey"
+                :is-click-save="clickedSave"
                 @update-pattent="handleUpdatePattent"
               />
             </div>
@@ -92,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import FormTestCase from './formTestCase/FormTestCase.vue'
 import ValidateFrom from './validateForm/ValidateForm.page.vue'
 import { CONSTANTS } from '@/components/constant'
@@ -109,6 +115,8 @@ const emit = defineEmits<{
   toggleModal: []
 }>()
 
+const clickedSave = ref<boolean>(false)
+const requiredKey = ref<string[]>([])
 const activeTab = ref('tab1')
 const switchTab = (tab: string) => {
   activeTab.value = tab
@@ -121,6 +129,19 @@ const { ABNORMAL, NORMAL, VALIDATTION } = CONSTANTS.TAB_PATTENT
 const pattentTestCase = ref<IPattentTestCase>({})
 const validateForm = ref(props.dataValidateForm as any)
 
+const fieldRequired = computed(() => {
+  const { value } = validateForm
+  const lsRequired: string[] = []
+
+  value?.forEach(({ title, required }: IValidate) => {
+    if (!required?.is_checked && title) {
+      lsRequired.push(title)
+    }
+  })
+
+  return lsRequired
+})
+
 const handleUpdatePattent = (type: string, pattent: any) => {
   pattentTestCase.value = {
     ...pattentTestCase.value,
@@ -129,10 +150,19 @@ const handleUpdatePattent = (type: string, pattent: any) => {
 }
 
 const save = () => {
-  handleUpdatePattent(CONSTANTS.TAB_PATTENT.VALIDATTION, validateForm.value)
-  const dataSave = convertBeforeSaveLocalStorage(pattentTestCase.value)
-  pattentLocalStorage.set(dataSave)
-  toggleModal()
+  const { value } = requiredKey
+  const canSave = value?.every(key => !key || key.localeCompare("") === 0)
+    || activeTab.value.localeCompare('tab1') === 0
+    || activeTab.value.localeCompare('tab2') === 0
+
+  if (canSave) {
+    handleUpdatePattent(CONSTANTS.TAB_PATTENT.VALIDATTION, validateForm.value)
+    const dataSave = convertBeforeSaveLocalStorage(pattentTestCase.value)
+    pattentLocalStorage.set(dataSave)
+    toggleModal()
+  } else {
+    clickedSave.value = true
+  }
 }
 
 const toggleModal = () => {
@@ -216,6 +246,20 @@ const initvalidate = () => {
   }
 }
 
+const initRequireKey = () => {
+  const { value } = fieldRequired
+
+  value?.forEach(key => {
+    requiredKey.value.push(key)
+  })
+}
+
+watch(() => props.showModal, (newValue) => {
+  if (!newValue) {
+    clickedSave.value = false
+  }
+})
+
 watch(
   () => props.dataValidateForm,
   () => {
@@ -227,6 +271,7 @@ watch(
 onMounted(() => {
   initValue()
   initvalidate()
+  initRequireKey()
 })
 </script>
 

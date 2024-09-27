@@ -7,6 +7,10 @@
       v-model="listPattent[index]"
       :data="dataSource"
       :index="index + 1"
+      :ls-required="lsRequired"
+      :require-key="requiredKey"
+      :type="type"
+      :is-click-save="isClickSave"
     />
   </div>
   <div class="text-end">
@@ -29,6 +33,9 @@ const props = withDefaults(
     type: string
     data?: ITableEvent[]
     pattents?: ITestCaseItem[]
+    lsRequired: string[]
+    requiredKey: string[]
+    isClickSave: boolean
   }>(),
   {
     data: () => [{} as ITableEvent]

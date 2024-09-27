@@ -71,7 +71,7 @@ const toggleModal = () => {
 const setDefaultValue = (data: ITableEvent[]) => {
   return data.map((item, index) => {
     return {
-      title: item.type + '::' + item.c_element + ' ::' + item.selector,
+      title: item.type + '::' + item.c_element + '::' + item.selector,
       action_element: item.action_element
     }
   }) as IValidate[]
