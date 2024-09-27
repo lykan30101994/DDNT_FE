@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import FormTestCase from './formTestCase/FormTestCase.vue'
 import ValidateFrom from './validateForm/ValidateForm.page.vue'
 import { CONSTANTS } from '@/components/constant'
@@ -215,6 +215,14 @@ const initvalidate = () => {
     validateForm.value = pattentTestCase.value[VALIDATTION]
   }
 }
+
+watch(
+  () => props.dataValidateForm,
+  () => {
+    validateForm.value = props.dataValidateForm
+    setDefaultValidate()
+  }
+)
 
 onMounted(() => {
   initValue()

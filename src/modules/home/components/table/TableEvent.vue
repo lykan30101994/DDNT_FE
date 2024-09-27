@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { IHeaderTable } from '../../../../components/common/table/header/TableHeader.type'
 import TableHeader from '../../../../components/common/table/header/TableHeader.vue'
 import TableTitle from '../../../../components/common/table/title/TableTitle.vue'
@@ -62,19 +62,29 @@ const props = defineProps<{
   fieldTable: { [key: string]: string }
 }>()
 
-const validateForm = ref(
-  props.data.map((item, index) => {
-    return {
-      title: item.type + '::' + item.c_element + ' ::' + item.selector,
-      action_element: item.action_element
-    }
-  }) as IValidate[]
-)
 
 const showModal = ref(false)
 const toggleModal = () => {
   showModal.value = !showModal.value
 }
+
+const setDefaultValue = (data: ITableEvent[]) => {
+  return data.map((item, index) => {
+    return {
+      title: item.type + '::' + item.c_element + ' ::' + item.selector,
+      action_element: item.action_element
+    }
+  }) as IValidate[]
+}
+
+const validateForm = ref(setDefaultValue(props.data))
+
+watch(
+  () => props.data,
+  (newVal) => {
+    validateForm.value = setDefaultValue(newVal)
+  }
+)
 </script>
 
 <style lang="scss" scoped>
