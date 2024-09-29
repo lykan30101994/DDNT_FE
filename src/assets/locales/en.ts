@@ -1,17 +1,37 @@
 export default {
-  validateRequired: (item: string) => `Check required ${item}`,
-  validateMaxLength: (item: string, value: number) => `Check max length > ${value} of item ${item}`,
-  validateFormat: (item: string, value: string) => `Check format ${value} of item ${item}`,
-  testStepRequired: (item: string, event: string) =>
-    `Step 1: Do not enter data into item ${item} \n Step 2: Click button ${event}`,
+  validateRequired: (item: string) => `Check [${item}] is required`,
+  validateMaxLength: (item: string, value: number) => `Check max length of [${item}]`,
+  validateFormat: (item: string, value: string) => `Check format of [${item}] is ${value} `,
+  // Purpose for case required
+  testStepRequired: (item: string, event: string) => `STEP 1: Not enter [${item}] \n STEP 2: Click [${event}]`,
+  testStepRequiredForText: (item: string, event: string) => `STEP 1: Not enter [${item}] \n STEP 2: Click [${event}]`,
+  testStepRequiredForCheckbox: (item: string, event: string) =>
+    `STEP 1: Not click [${item}] \n STEP 2: Click [${event}]`,
+  testStepRequiredForDropdown: (item: string, event: string) =>
+    `STEP 1: Not select [${item}] \n STEP 2: Click [${event}]`,
+  //
   testStepMaxlenght: (item: string, event: string, data: string) =>
-    `Step 1: Enter data into item ${item} is ${data} \n Step 2: Click button ${event}`,
+    `STEP 1: Enter [${item}] is ${data} \n STEP 2: Click [${event}]`,
+  testStepMaxlenghtText: (item: string, event: string, data: string) =>
+    `STEP 1: Enter [${item}] is ${data} \n STEP 2: Click [${event}]`,
+  testStepMaxlenghtCheckbox: (item: string, event: string, data: string) =>
+    `STEP 1: Click [${item}] is ${data} \n STEP 2: Click [${event}]`,
+  testStepMaxlenghtDropdown: (item: string, event: string, data: string) =>
+    `STEP 1: Select [${item}] is ${data} \n STEP 2: Click [${event}]`,
+
   testStepFormat: (item: string, value: string, event: string) =>
-    `Step 1: Enter data into item ${item}　is ${value}\n Step 2: Click button ${event}`,
-  testStepCommon: (step: number, item: string, value: string) =>
-    `Step${step}: Nhập data vào item ${item} với giá trị là: ${value}\n`,
-  testStepSubmit: (step: number, element: string) => `Step ${step}: Click button ${element}\n`,
-  expectedResultRequired: (item: string) => `Display message: Field ${item} is required`,
-  expectedResultMaxLength: (value: string) => `Display message: Please enter within ${value} characters.`,
-  expectedResultFormat: (value: string) => `Display message: Please enter the correct format ${value}.`
+    `STEP 1: Enter [${item}]　is ${value}\n STEP 2: Click [${event}]`,
+  testStepFormatText: (item: string, value: string, event: string) =>
+    `STEP 1: Enter [${item}]　is ${value}\n STEP 2: Click [${event}]`,
+  testStepFormatCheckbox: (item: string, value: string, event: string) =>
+    `STEP 1: Enter [${item}]　is ${value}\n STEP 2: Click [${event}]`,
+  testStepFormatDropdown: (item: string, value: string, event: string) =>
+    `STEP 1: Enter [${item}]　is ${value}\n STEP 2: Click [${event}]`,
+
+  testStepCommon: (STEP: number, item: string, value: string) => `STEP${STEP}: Enter [${item}] is ${value}\n`,
+  testStepSubmit: (STEP: number, element: string) => `STEP ${STEP}: Click [${element}]\n`,
+
+  expectedResultRequired: (item: string) => `Field [${item}] is required`,
+  expectedResultMaxLength: (value: string) => `Please enter within ${value} characters.`,
+  expectedResultFormat: (value: string) => `Please enter the correct format ${value}.`
 }

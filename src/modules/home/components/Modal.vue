@@ -154,9 +154,7 @@ const handleUpdatePattent = (type: string, pattent: any) => {
 
 const save = () => {
   const canSave =
-    isPassRequired() ||
-    activeTab.value.localeCompare('tab1') === 0 ||
-    activeTab.value.localeCompare('tab2') === 0
+    isPassRequired() || activeTab.value.localeCompare('tab1') === 0 || activeTab.value.localeCompare('tab2') === 0
 
   if (canSave) {
     handleUpdatePattent(CONSTANTS.TAB_PATTENT.VALIDATTION, validateForm.value)
