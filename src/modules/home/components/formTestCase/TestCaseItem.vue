@@ -39,7 +39,10 @@
           </td>
           <td class="text-start d-flex">
             <p>{{ getKeyInput(item) }}</p>
-            <div v-if="hasRequired(item)" class="label-required">
+            <div
+              v-if="hasRequired(item)"
+              class="label-required"
+            >
               <p>*</p>
             </div>
           </td>
@@ -51,7 +54,12 @@
               :disabled="!modelCheckBox[getKeyInput(item)]"
               @input="changeDataRequiredInput($event, item)"
             />
-            <p v-if="onDataRequired(item)" class="text-required">Vui lòng nhập vào input</p>
+            <p
+              v-if="onDataRequired(item)"
+              class="text-required"
+            >
+              Vui lòng nhập vào input
+            </p>
           </td>
           <td width="300px"></td>
         </tr>
@@ -78,34 +86,41 @@ const { TAB_PATTENT } = CONSTANTS
 
 const pattentTestCase = defineModel({ default: {} as ITestCaseItem })
 const modelCheckBox = ref<ITestCaseItem>({})
+const keyRequiredItem = ref<string[]>(props.requireKey || [])
 
 const changeDataRequiredInput = (event: Event, item: ITableEvent) => {
   const target = event.target as HTMLInputElement
   const value = target.value
-  const { requireKey, lsRequired } = props
-  const keyField = getKeyInput(item)
+  const { lsRequired } = props
+  const keyField = getKeyInput(item, true)
 
   let index = -1
-  for(let i in lsRequired) {
+  for (let i in lsRequired) {
     const idx = parseInt(i)
-    if (lsRequired[idx].localeCompare(keyField) === 0) {
+    const keyCompare = concatCaseIndex(lsRequired[idx])
+
+    if (keyCompare.localeCompare(keyField) === 0) {
       index = idx
       break
     }
   }
 
   if (value) {
-    requireKey[index] = ""
+    keyRequiredItem.value[index] = ''
   } else {
-    requireKey[index] = keyField
+    keyRequiredItem.value[index] = keyField
   }
 }
 
-const onDataRequired = (item: ITableEvent) => {
-  const { requireKey, type, isClickSave } = props
-  const keyField = getKeyInput(item)
+const concatCaseIndex = (str: string) => {
+  return `${str}_case_${props.index}`
+}
 
-  return requireKey.includes(keyField) && type === TAB_PATTENT.NORMAL && isClickSave
+const onDataRequired = (item: ITableEvent) => {
+  const { type, isClickSave } = props
+  const keyField = getKeyInput(item, true)
+
+  return keyRequiredItem.value.includes(keyField) && type === TAB_PATTENT.NORMAL && isClickSave
 }
 
 const hasRequired = (item: ITableEvent) => {
@@ -115,8 +130,14 @@ const hasRequired = (item: ITableEvent) => {
   return lsRequired.includes(keyField) && type === TAB_PATTENT.NORMAL
 }
 
-const getKeyInput = (item: ITableEvent) => {
-  return `${item.type}::${item.c_element}::${item.selector}`
+const getKeyInput = (item: ITableEvent, hasCaseIndex: boolean = false) => {
+  let key = `${item.type}::${item.c_element}::${item.selector}`
+
+  if (hasCaseIndex) {
+    key = concatCaseIndex(key)
+  }
+
+  return key
 }
 
 const initCheckBox = () => {
@@ -145,8 +166,21 @@ watch(
   { deep: true }
 )
 
+const convertKeyRequired = (keyRequire: string[]) => {
+  return keyRequire.filter((key) => !pattentTestCase.value[key]).map((item) => `${item}_case_${props.index}`)
+}
+
+const initKeyRequired = () => {
+  const { requireKey } = props
+
+  if (requireKey?.length) {
+    keyRequiredItem.value = [...convertKeyRequired(keyRequiredItem.value)]
+  }
+}
+
 onMounted(() => {
   initCheckBox()
+  initKeyRequired()
 })
 </script>
 

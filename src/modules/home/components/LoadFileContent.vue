@@ -173,14 +173,63 @@ const loadData = () => {
   }
 }
 
-const handleExportTestCase = () => {
+const autoFillData = () => {
   const pattents = pattentLocalStorage.get()
 
+  for (const category in pattents) {
+    const normalFirst = pattents[category][NORMAL]?.[0]
+    pattents[category][ABNORMAL]?.forEach((item: ITestCaseItem) => {
+      const { action, action_element, expected_result, test_description, ...input } = item
+      const keyMissing = getKeyRequiredMising(Object.keys(input), category)
+
+      keyMissing.forEach((key) => {
+        item[key] = normalFirst?.[key]
+      })
+    })
+  }
+
+  return pattents
+}
+
+const getKeyRequired = () => {
+  const keyRequired = {} as IPattentLocalStorage
+  const pattents = pattentLocalStorage.get()
+
+  for (const category in pattents) {
+    pattents[category][VALIDATTION]?.forEach(({ title, required }: IValidate) => {
+      if (!required.is_checked) {
+        if (!keyRequired[category]) {
+          keyRequired[category] = [] as string[]
+        }
+
+        keyRequired[category].push(title as string)
+      }
+    })
+  }
+
+  return keyRequired
+}
+
+const getKeyRequiredMising = (keys: string[], category: string) => {
+  const keyMissing = [] as string[]
+  const keyRequireds = getKeyRequired()?.[category] || []
+
+  keyRequireds?.forEach((keyRequired: string) => {
+    if (!keys.includes(keyRequired)) {
+      keyMissing.push(keyRequired)
+    }
+  })
+
+  return keyMissing
+}
+
+const handleExportTestCase = () => {
+  const pattents = autoFillData()
   if (pattents) {
     const testCase = converTestCase(pattents)
     resetIndexTC()
 
-    writeWithTemplate(Template.TEST_CASE, testCase, 'A,E,AC,AM')
+    writeWithTemplate(Template.TEST_CASE, testCase, 'A,E,N,AC,AM')
   }
 }
 
@@ -225,7 +274,7 @@ const renderTestCaseNormal = (input: any) => {
   stepCounter++
   increaseIndexTC()
 
-  return [no, test_description, testSteps.trim(), expected_result]
+  return [no, test_description, '', testSteps.trim(), expected_result]
 }
 
 const increaseIndexTC = () => {
@@ -259,6 +308,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateRequired(element),
+        '',
         translations.value.testStepRequired(element, actionElement),
         translations.value.expectedResultRequired(element)
       ])
@@ -269,6 +319,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateMaxLength(element, valueMaxlength),
+        '',
         translations.value.testStepMaxlenght(element, actionElement, dataMaxlength),
         translations.value.expectedResultMaxLength(valueMaxlength)
       ])
@@ -280,6 +331,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateFormat(element, valueFormat),
+        '',
         translations.value.testStepFormat(element, dataFormat, actionElement),
         translations.value.expectedResultFormat(valueFormat)
       ])

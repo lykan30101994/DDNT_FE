@@ -50,7 +50,10 @@
                 v-for="(item, idx) in validateForm"
                 :key="idx"
               >
-                <ValidateFrom v-model="validateForm[idx]" :index="idx" />
+                <ValidateFrom
+                  v-model="validateForm[idx]"
+                  :index="idx"
+                />
               </template>
             </div>
             <div v-else-if="activeTab === 'tab2'">
@@ -150,10 +153,8 @@ const handleUpdatePattent = (type: string, pattent: any) => {
 }
 
 const save = () => {
-  const { value } = requiredKey
-  const canSave = value?.every(key => !key || key.localeCompare("") === 0)
-    || activeTab.value.localeCompare('tab1') === 0
-    || activeTab.value.localeCompare('tab2') === 0
+  const canSave =
+    isPassRequired() || activeTab.value.localeCompare('tab1') === 0 || activeTab.value.localeCompare('tab2') === 0
 
   if (canSave) {
     handleUpdatePattent(CONSTANTS.TAB_PATTENT.VALIDATTION, validateForm.value)
@@ -163,6 +164,21 @@ const save = () => {
   } else {
     clickedSave.value = true
   }
+}
+
+const isPassRequired = () => {
+  const normal = pattentTestCase.value?.[NORMAL] || []
+  let isPassed = true
+
+  normal.forEach((item) => {
+    requiredKey.value.forEach((key) => {
+      if (!item[key]) {
+        isPassed = false
+      }
+    })
+  })
+
+  return isPassed
 }
 
 const toggleModal = () => {
@@ -249,22 +265,32 @@ const initvalidate = () => {
 const initRequireKey = () => {
   const { value } = fieldRequired
 
-  value?.forEach(key => {
+  value?.forEach((key) => {
     requiredKey.value.push(key)
   })
 }
 
-watch(() => props.showModal, (newValue) => {
-  if (!newValue) {
-    clickedSave.value = false
+watch(
+  () => props.showModal,
+  (newValue) => {
+    if (!newValue) {
+      clickedSave.value = false
+    }
   }
-})
+)
 
 watch(
   () => props.dataValidateForm,
   () => {
     validateForm.value = props.dataValidateForm
     setDefaultValidate()
+  }
+)
+
+watch(
+  () => fieldRequired.value,
+  (newVal) => {
+    requiredKey.value = [...newVal]
   }
 )
 
