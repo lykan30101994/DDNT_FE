@@ -1,7 +1,6 @@
 export enum LANGUAGE {
-  VN = 0,
-  JP = 1,
-  EN = 2
+  JP = 0,
+  EN = 1
 }
 
 export const CONSTANTS = {

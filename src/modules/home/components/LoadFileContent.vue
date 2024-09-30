@@ -84,10 +84,6 @@ const { writeWithTemplate } = useExcel()
 
 const optionLanguage: IOption[] = [
   {
-    label: 'VN',
-    value: LANGUAGE.VN
-  },
-  {
     label: 'JP',
     value: LANGUAGE.JP
   },
@@ -266,7 +262,7 @@ const renderTestCaseNormal = (input: any) => {
 
   for (const [key, value] of Object.entries(inputs)) {
     const itemName = key.split('::')?.[2] ?? ''
-    testSteps += translations.value.testStepCommon(stepCounter, itemName, value as string)
+    testSteps += translations.value.testStepCommon(stepCounter, key, value as string)
     stepCounter++
   }
 
@@ -282,7 +278,7 @@ const increaseIndexTC = () => {
 }
 
 const resetIndexTC = () => {
-  indexTC.value = 0
+  indexTC.value = 1
 }
 
 const setDataFromLocalStorage = () => {
@@ -297,7 +293,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
   const validation: string[][] = []
 
   inputData?.forEach((item: any) => {
-    const element = item.title.split('::')[2].trim()
+    const element = item.title.trim()
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
     const dataMaxlength = item?.max_length?.data_check
@@ -345,12 +341,9 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
 const changeLanguage = (lang: string) => {
   switch (lang.toString()) {
     case '0':
-      translations.value = vn
-      break
-    case '1':
       translations.value = jp
       break
-    case '2':
+    case '1':
       translations.value = en
       break
   }
