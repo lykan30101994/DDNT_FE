@@ -25,6 +25,12 @@
             >
               LOAD
             </button>
+            <button
+              class="btn btn-primary fw-bold"
+              @click="loadExcelToObject"
+            >
+              LOAD-EXCEL
+            </button>
           </div>
         </div>
       </div>
@@ -72,13 +78,13 @@ const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 const keyNormal = [ABNORMAL, NORMAL]
 
 const file = ref<File | null>(null)
-const headers = ref<string[]>([])
 const tableData = ref<string[][]>([])
 const selectedLanguage = ref<string | number | undefined>()
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
 const translations = ref(jp)
 const indexTC = ref<number>(1)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
+const dataEventLocalStorage = localStorageUtil(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
 
 const { writeWithTemplate } = useExcel()
 
@@ -146,27 +152,107 @@ const uploadFile = () => {
   }
 }
 
-const loadData = () => {
-  if (file.value) {
-    pattentLocalStorage.remove()
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const data = new Uint8Array(event.target?.result as ArrayBuffer)
-      const workbook = XLSX.read(data, { type: 'array' })
-      const firstSheetName = workbook.SheetNames[0]
-      const worksheet = workbook.Sheets[firstSheetName]
+const readExcelToArray = (indexSheet: number, indexReadData: number, header: 'A' | number | string[]) => {
+  return new Promise((resolve, reject) => {
+    if (file.value) {
+      const reader = new FileReader()
 
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
-      if (jsonData.length > 0) {
-        headers.value = jsonData[0] as string[]
-        tableData.value = jsonData.slice(1) as string[][]
+      reader.onload = async (event) => {
+        try {
+          const data = new Uint8Array(event.target?.result as ArrayBuffer)
+          const workbook = XLSX.read(data, { type: 'array' })
+          const firstSheetName = workbook.SheetNames[indexSheet]
+          const worksheet = workbook.Sheets[firstSheetName]
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header }).slice(indexReadData)
+
+          resolve(jsonData)
+        } catch (error) {
+          reject(error)
+        }
+      }
+
+      reader.onerror = (error) => {
+        reject(error)
+      }
+
+      reader.readAsArrayBuffer(file.value)
+    } else {
+      alert('Please select a file to load data from.')
+      reject(new Error('No file selected.'))
+    }
+  })
+}
+const loadData = () => {
+  const indexSheet = 0
+  const indexReadData = 1
+  const header = 1
+
+  readExcelToArray(0, 1, 1)
+    .then((data) => {
+      tableData.value = data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const loadExcelToObject = () => {
+  const indexSheet = 2
+  const indexReadData = 5
+  const header = 'A'
+
+  readExcelToArray(indexSheet, indexReadData, header)
+    .then((data) => {
+      const dataEvent = convertExcelToDateEvent(data)
+      dataEventLocalStorage.set(dataEvent)
+      setDataFromLocalStorage()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const convertExcelToDateEvent = (data: any[]) => {
+  const output = {}
+  let categoryCurrent = ''
+
+  data.forEach((row) => {
+    if (row['A'].includes('-')) {
+      categoryCurrent = row['A']
+      output[categoryCurrent] = []
+    } else if (row['E']) {
+      const element = getElementByRegex(row['E'])
+      if (element) {
+        const categorySplit = categoryCurrent.split(' - ')
+        const elementSplit = element.split('::')
+
+        if (categorySplit.length === 3 && elementSplit.length === 3) {
+          const dataNew = {
+            category: categorySplit[0],
+            type: elementSplit[0],
+            c_element: elementSplit[1],
+            selector: elementSplit[2],
+            action: categorySplit[1],
+            action_element: categorySplit[2]
+          }
+
+          if (!isExistDataEvent(output[categoryCurrent], dataNew))
+            output[categoryCurrent] = [...output[categoryCurrent], dataNew]
+        }
       }
     }
+  })
 
-    reader.readAsArrayBuffer(file.value)
-  } else {
-    alert('Please select a file to load data from.')
-  }
+  return output
+}
+
+const isExistDataEvent = (data, obj) => {
+  return data.some((item) => JSON.stringify(item) === JSON.stringify(obj))
+}
+
+const getElementByRegex = (str: string) => {
+  const regexElement = /\[([^\]]+)\]/
+  return str.match(regexElement)?.[1] || ''
 }
 
 const autoFillData = () => {
