@@ -24,3 +24,7 @@ export interface ITestCaseResult {
   test_step: string
   expected_result: string
 }
+
+export interface IObjectType {
+  [key: string]: any
+}

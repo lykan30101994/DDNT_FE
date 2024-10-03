@@ -11,5 +11,21 @@ export const CONSTANTS = {
   },
   KEY_PATTENT: 'pattents',
   KEY_CURRENT_FILE: 'current_file',
-  KEY_LOCAL_STORAGE_DATA: 'data_event'
+  KEY_LOCAL_STORAGE_DATA: 'data_event',
+  COLUMN_EXCEL: {
+    FIRST: 'A',
+    PURPOSE: 'E',
+    TEST_STEP: 'AC',
+    EXPECT_RESULT: 'AM'
+  },
+  KEY_VALIDATION: {
+    REQUIRED: 'required',
+    MAXLENGTH: 'max_length',
+    FORMAT: 'format'
+  },
+  REGEX: {
+    TYPE_VALIDATION_REQUIRED: /required|必要/,
+    TYPE_VALIDATION_MAX_LENGTH: /maxlength|最大長さ/,
+    TYPE_VALIDATION_FORMAT: /format|フォーマット/
+  }
 }

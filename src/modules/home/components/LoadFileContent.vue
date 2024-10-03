@@ -70,11 +70,14 @@ import en from '../../../assets/locales/en'
 import jp from '../../../assets/locales/jp'
 import type { IButton } from '@/components/common/button/ButtonGroup.type'
 import type { IOption } from '@/components/common/dropdown/DropDown.type'
-import type { IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
+import type { IObjectType, IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
 import { useExcel } from '@/components/utils/excel-utils'
 import { Template } from '@/components/template/template'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
+const { FIRST, PURPOSE, TEST_STEP, EXPECT_RESULT } = CONSTANTS.COLUMN_EXCEL
+const { REQUIRED, FORMAT, MAXLENGTH } = CONSTANTS.KEY_VALIDATION
+const { REGEX } = CONSTANTS
 const keyNormal = [ABNORMAL, NORMAL]
 
 const file = ref<File | null>(null)
@@ -113,6 +116,12 @@ const contentEvents = computed(() => {
   return tableData.value.splice(1)
 })
 
+const resetData = () => {
+  dataEventLocalStorage.remove()
+  pattentLocalStorage.remove()
+  tableData.value = []
+}
+
 const mapEvent = computed(() => {
   const map: Map<string, ITableEvent[]> = new Map()
   contentEvents.value?.forEach((event) => {
@@ -141,6 +150,7 @@ const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   if (target.files && target.files.length > 0) {
     file.value = target.files[0]
+    resetData()
   }
 }
 
@@ -182,13 +192,14 @@ const readExcelToArray = (indexSheet: number, indexReadData: number, header: 'A'
     }
   })
 }
+
 const loadData = () => {
   const indexSheet = 0
   const indexReadData = 1
   const header = 1
 
-  readExcelToArray(0, 1, 1)
-    .then((data) => {
+  readExcelToArray(indexSheet, indexReadData, header)
+    .then((data: any) => {
       tableData.value = data
     })
     .catch((err) => {
@@ -202,9 +213,11 @@ const loadExcelToObject = () => {
   const header = 'A'
 
   readExcelToArray(indexSheet, indexReadData, header)
-    .then((data) => {
+    .then((data: any) => {
       const dataEvent = convertExcelToDateEvent(data)
+      const pattents = converExcelToPattents(data)
       dataEventLocalStorage.set(dataEvent)
+      pattentLocalStorage.set(pattents)
       setDataFromLocalStorage()
     })
     .catch((err) => {
@@ -213,15 +226,15 @@ const loadExcelToObject = () => {
 }
 
 const convertExcelToDateEvent = (data: any[]) => {
-  const output = {}
+  const output = {} as IObjectType
   let categoryCurrent = ''
 
   data.forEach((row) => {
-    if (row['A'].includes('-')) {
-      categoryCurrent = row['A']
+    if (row[FIRST].includes('-')) {
+      categoryCurrent = row[FIRST]
       output[categoryCurrent] = []
-    } else if (row['E']) {
-      const element = getElementByRegex(row['E'])
+    } else if (row[PURPOSE]) {
+      const element = getElementByRegex(row[PURPOSE])
       if (element) {
         const categorySplit = categoryCurrent.split(' - ')
         const elementSplit = element.split('::')
@@ -246,13 +259,218 @@ const convertExcelToDateEvent = (data: any[]) => {
   return output
 }
 
-const isExistDataEvent = (data, obj) => {
-  return data.some((item) => JSON.stringify(item) === JSON.stringify(obj))
+const converExcelToPattents = (data: any[]) => {
+  const output = {} as IObjectType
+  let categoryCurrent = ''
+  let tabCurrent = ''
+
+  data.forEach((row) => {
+    if (row[FIRST].includes(' - ')) {
+      categoryCurrent = row[FIRST]
+      output[categoryCurrent] = {}
+    } else if (row[FIRST] === '1.Validation') {
+      tabCurrent = VALIDATTION
+      output[categoryCurrent][VALIDATTION] = []
+    } else if (row[FIRST] === '2.Abnormal') {
+      tabCurrent = ABNORMAL
+      output[categoryCurrent][ABNORMAL] = []
+    } else if (row[FIRST] === '3.Normal') {
+      tabCurrent = NORMAL
+      output[categoryCurrent][NORMAL] = []
+    } else {
+      if (tabCurrent === VALIDATTION) {
+        renderValidationFromExcel(row, output, categoryCurrent, tabCurrent)
+      } else {
+        renderPattentFromExcel(row, output, categoryCurrent, tabCurrent)
+      }
+    }
+  })
+
+  fillValidateProperties(output)
+
+  return output
+}
+
+const renderValidationFromExcel = (row: any, output: any, categoryCurrent: string, tabCurrent: string) => {
+  const categorySplit = categoryCurrent.split(' - ')
+  let isCheckRequired = true
+
+  let isCheckMaxlength = true
+  let valueMaxLength = ''
+  let dataCheckMaxLength = ''
+
+  let isCheckFormat = true
+  let valueFormat = ''
+  let dataCheckFormat = ''
+
+  let element = getElementByRegex(row[PURPOSE])
+
+  if (isValidateRequied(row[PURPOSE])) {
+    isCheckRequired = false
+  }
+
+  if (isValidateMaxlength(row[PURPOSE])) {
+    const splitStep = row[TEST_STEP]?.split('\n')
+    isCheckMaxlength = false
+    valueMaxLength = getValueByRegex(row[PURPOSE])
+    dataCheckMaxLength = getDataCheck(splitStep[0] || '')
+  }
+
+  if (isValidateFormat(row[PURPOSE])) {
+    const splitStep = row[TEST_STEP]?.split('\n')
+    isCheckFormat = false
+    valueFormat = getValueByRegex(row[PURPOSE])
+    dataCheckFormat = getDataCheck(splitStep[0] || '')
+  }
+
+  if (!isCheckRequired || !isCheckMaxlength || !isCheckFormat) {
+    const indexValidate = findValidateByTitle(output[categoryCurrent][tabCurrent], element)
+
+    const objectPattent: IObjectType = {
+      title: element,
+      action_element: categorySplit[2],
+      action: 'onclick'
+    }
+
+    if (!isCheckRequired) {
+      objectPattent[REQUIRED] = {
+        data_check: 'blank',
+        value: '',
+        is_checked: false
+      }
+    }
+
+    if (!isCheckMaxlength) {
+      objectPattent[MAXLENGTH] = {
+        data_check: dataCheckMaxLength,
+        value: valueMaxLength,
+        is_checked: false
+      }
+    }
+
+    if (!isCheckFormat) {
+      if (indexValidate === -1) {
+        objectPattent[FORMAT] = []
+      } else if (!objectPattent[FORMAT]) {
+        objectPattent[FORMAT] = output[categoryCurrent][tabCurrent][indexValidate][FORMAT] || []
+      }
+
+      objectPattent[FORMAT] = [
+        ...objectPattent[FORMAT],
+        {
+          data_check: dataCheckFormat,
+          value: valueFormat,
+          is_checked: false
+        }
+      ]
+    }
+
+    if (indexValidate === -1) {
+      output[categoryCurrent][tabCurrent] = [...output[categoryCurrent][tabCurrent], objectPattent]
+    } else {
+      output[categoryCurrent][tabCurrent][indexValidate] = {
+        ...output[categoryCurrent][tabCurrent][indexValidate],
+        ...objectPattent
+      }
+    }
+  }
+}
+
+const renderPattentFromExcel = (row: any, output: any, categoryCurrent: string, tabCurrent: string) => {
+  if (!output[categoryCurrent][tabCurrent]) {
+    output[categoryCurrent][tabCurrent] = []
+  }
+
+  const splitStep = row[TEST_STEP]?.split('\n')
+
+  let objectPattent = {
+    test_description: row[PURPOSE],
+    expected_result: row[EXPECT_RESULT]
+  }
+
+  if (splitStep && splitStep?.length) {
+    splitStep.pop()
+    splitStep.forEach((item: string) => {
+      const element = getElementByRegex(item)
+      const value = getDataCheck(item)
+
+      objectPattent = {
+        ...objectPattent,
+        [element]: value
+      }
+    })
+  }
+
+  output[categoryCurrent][tabCurrent] = [...output[categoryCurrent][tabCurrent], objectPattent]
+}
+
+const fillValidateProperties = (output: any) => {
+  const itemFill = {
+    data_check: '',
+    value: '',
+    is_checked: true
+  }
+
+  for (const categoryCurrent in output) {
+    output[categoryCurrent]?.[VALIDATTION]?.forEach((item: any) => {
+      ;[REQUIRED, MAXLENGTH, FORMAT].forEach((type) => {
+        if (type === FORMAT) {
+          if (!item[type] && !item[type]?.length) {
+            item[type] = [itemFill]
+          }
+        } else {
+          if (!item[type]) {
+            item[type] = itemFill
+          }
+        }
+      })
+    })
+  }
+}
+
+const checkTypeValidate = (str: string, regex: RegExp) => {
+  return regex.test(str)
+}
+
+const isValidateRequied = (str: string) => {
+  return checkTypeValidate(str, REGEX.TYPE_VALIDATION_REQUIRED)
+}
+
+const isValidateMaxlength = (str: string) => {
+  return checkTypeValidate(str, REGEX.TYPE_VALIDATION_MAX_LENGTH)
+}
+
+const isValidateFormat = (str: string) => {
+  return checkTypeValidate(str, REGEX.TYPE_VALIDATION_FORMAT)
+}
+
+const isExistDataEvent = (data: any, obj: any) => {
+  return data.some((item: IObjectType) => JSON.stringify(item) === JSON.stringify(obj))
 }
 
 const getElementByRegex = (str: string) => {
   const regexElement = /\[([^\]]+)\]/
-  return str.match(regexElement)?.[1] || ''
+  return str?.match(regexElement)?.[1] || ''
+}
+
+const getValueByRegex = (str: string) => {
+  const regexElement = /\{([^\]]+)\}/
+  return str?.match(regexElement)?.[1] || ''
+}
+
+const getDataCheck = (str: string) => {
+  const spit = str.split(': ')
+  return spit?.[2] || ''
+}
+
+const findValidateByTitle = (valdidations: any[], title: string) => {
+  for (let i = 0; i < valdidations.length; i++) {
+    if (valdidations[i].title === title) {
+      return i
+    }
+  }
+
+  return -1
 }
 
 const autoFillData = () => {
@@ -418,7 +636,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
           translations.value.testStepFormat(element, dataFormat, actionElement),
           translations.value.expectedResultFormat(valueFormat)
         ])
- 
+
         increaseIndexTC()
       }
     })
