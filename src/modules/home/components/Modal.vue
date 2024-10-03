@@ -154,9 +154,7 @@ const handleUpdatePattent = (type: string, pattent: any) => {
 
 const save = () => {
   const canSave =
-    isPassRequired() ||
-    activeTab.value.localeCompare('tab1') === 0 ||
-    activeTab.value.localeCompare('tab2') === 0
+    isPassRequired() || activeTab.value.localeCompare('tab1') === 0 || activeTab.value.localeCompare('tab2') === 0
 
   if (canSave) {
     handleUpdatePattent(CONSTANTS.TAB_PATTENT.VALIDATTION, validateForm.value)
@@ -242,8 +240,12 @@ const setDefaultValidate = () => {
     valid.max_length = initializeField(valid.max_length) as ICommonValidate
     valid.max_length.is_checked = true
 
-    valid.format = initializeField(valid.format) as ICommonValidate
-    valid.format.is_checked = true
+    if (!Array.isArray(valid.format)) {
+      valid.format = []
+    }
+
+    valid.format[0] = initializeField(valid.format[0]) as ICommonValidate
+    valid.format[0].is_checked = true
   })
 }
 

@@ -80,7 +80,7 @@
     <div class="col-md-2">
       <div class="form-check">
         <input
-          :checked="!validateForm.format.is_checked"
+          :checked="!validateForm.format[0].is_checked"
           class="form-check-input"
           type="checkbox"
           :id="`invalidFormat${index}`"
@@ -94,46 +94,32 @@
         </label>
       </div>
     </div>
-    <div class="col-md-4">
-      <label
-        :for="`valueFormat${index}`"
-        class="form-label"
-        >VALUE</label
+    <template
+      v-for="(testCase, index) of validateForm.format"
+      :key="index"
+    >
+      <FormatItem
+        v-model="validateForm.format[index]"
+        :index="index"
+        :arr-checked="validateForm.format[0].is_checked"
       >
-      <select
-        v-model="validateForm.format.value"
-        class="form-control"
-        :id="`valueFormat${index}`"
-        :disabled="arrChecked.isFormatChecked"
+      </FormatItem>
+    </template>
+    <div class="text-end">
+      <button
+        type="button"
+        class="btn btn-primary"
+        @click="handleAddCase"
       >
-        <option
-          v-for="option in options"
-          :key="option.value"
-          :value="option.value"
-        >
-          {{ option.text }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-6">
-      <label
-        :for="`dataCheckFormat${index}`"
-        class="form-label"
-        >DATA CHECK</label
-      >
-      <input
-        v-model="validateForm.format.data_check"
-        type="text"
-        class="form-control"
-        :id="`dataCheckFormat${index}`"
-        :disabled="arrChecked.isFormatChecked"
-      />
+        ADD CASE
+      </button>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import FormatItem from './FormatItem.vue'
 
 defineProps<{
   index: number
@@ -155,7 +141,7 @@ const valid = validateForm.value
 const arrChecked = ref({
   isRequiredChecked: valid.required.is_checked,
   isMaxLengthChecked: valid.max_length.is_checked,
-  isFormatChecked: valid.format.is_checked
+  isFormatChecked: valid.format[0].is_checked
 })
 
 const toggleInput = (type: string) => {
@@ -184,10 +170,16 @@ const setDefaultValue = (title: string, value: boolean) => {
     valid.max_length.data_check = ''
     valid.max_length.value = ''
   } else {
-    valid.format.is_checked = value
-    valid.format.data_check = ''
-    valid.format.value = ''
+    valid.format.forEach((element) => {
+      element.is_checked = value
+      element.data_check = ''
+      element.value = ''
+    })
   }
+}
+
+const handleAddCase = () => {
+  validateForm.value.format.push({is_checked: arrChecked.value.isFormatChecked} as ICommonValidate)
 }
 </script>
 

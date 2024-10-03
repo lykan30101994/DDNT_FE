@@ -3,7 +3,7 @@ interface IValidate {
   title?: string
   required: ICommonValidate
   max_length: ICommonValidate
-  format: ICommonValidate
+  format: ICommonValidate[]
 }
 
 interface ICommonValidate {

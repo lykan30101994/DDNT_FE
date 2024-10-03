@@ -297,8 +297,6 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
     const dataMaxlength = item?.max_length?.data_check
-    const dataFormat = item?.format?.data_check
-    const valueFormat = item?.format?.value
 
     if (!item.required.is_checked) {
       validation.push([
@@ -323,17 +321,21 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
       increaseIndexTC()
     }
 
-    if (!item.format.is_checked) {
-      validation.push([
-        `TC${String(indexTC.value).padStart(5, '0')}`,
-        translations.value.validateFormat(element, valueFormat),
-        '',
-        translations.value.testStepFormat(element, dataFormat, actionElement),
-        translations.value.expectedResultFormat(valueFormat)
-      ])
-
-      increaseIndexTC()
-    }
+    item.format.forEach((elements: any) => {
+      if (!elements.is_checked) {
+        const dataFormat = elements.data_check
+        const valueFormat = elements.value
+        validation.push([
+          `TC${String(indexTC.value).padStart(5, '0')}`,
+          translations.value.validateFormat(element, valueFormat),
+          '',
+          translations.value.testStepFormat(element, dataFormat, actionElement),
+          translations.value.expectedResultFormat(valueFormat)
+        ])
+ 
+        increaseIndexTC()
+      }
+    })
   })
   return validation
 }
