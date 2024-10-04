@@ -111,7 +111,7 @@
         class="btn btn-primary"
         @click="handleAddCase"
       >
-        ADD CASE
+        ADD FORMAT
       </button>
     </div>
   </form>
@@ -131,9 +131,24 @@ const validateForm = defineModel<IValidate>({
 
 const options = ref([
   { value: '', text: '' },
-  { value: 'N N N', text: 'N N N' },
-  { value: '999', text: '999' },
-  { value: 'yyyy/mm/dd', text: 'yyyy/mm/dd' }
+  { value: 'email', text: 'Email' },
+  { value: 'phone', text: 'Phone Numbers' },
+  { value: 'fullwidth_number', text: 'Fullwidth Numbers' },
+  { value: 'fullwidth_alphabet', text: 'Fullwidth Alphabet Characters' },
+  { value: 'fullwidth_katakana', text: 'Fullwidth Katakana' },
+  { value: 'fullwidth_hiragana', text: 'Fullwidth Hiragana' },
+  { value: 'halfwidth_number', text: 'Haftwidth Numbers' },
+  { value: 'halfwidth_alphabet', text: 'Haftwidth Alphabet Characters' },
+  { value: 'halfwidth _katakana', text: 'Haftwidth Katakana' },
+  { value: 'falfwidth _hiragana', text: 'Haftwidth Hiragana' },
+  { value: 'fullwidth_halfwidth', text: 'Fullwidth/ Halfwidth Symbol' },
+  { value: 'special_characters', text: 'Special Characters' },
+  { value: 'yyyy/mm/dd hh:mm:ss', text: 'Incorrect date format (YYYY/MM/DD hh:mm:ss)' },
+  { value: 'yyyy/mm/dd', text: 'Incorrect date format (YYYY/MM/DD)' },
+  { value: 'yyyy/mm', text: 'Incorrect date format (YYYY/MM)' },
+  { value: 'mm/dd', text: 'Incorrect date format (MM/DD)' },
+  { value: 'past_date', text: 'Past Date' },
+  { value: 'non_leap_years', text: 'The date for non-leap years.' }
 ])
 
 const valid = validateForm.value
@@ -179,7 +194,7 @@ const setDefaultValue = (title: string, value: boolean) => {
 }
 
 const handleAddCase = () => {
-  validateForm.value.format.push({is_checked: arrChecked.value.isFormatChecked} as ICommonValidate)
+  validateForm.value.format.push({ is_checked: arrChecked.value.isFormatChecked } as ICommonValidate)
 }
 </script>
 

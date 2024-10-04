@@ -18,7 +18,7 @@
       class="btn btn-primary"
       @click="handleAddCase"
     >
-      ADD CASE
+      ADD FORMAT
     </button>
   </div>
 </template>

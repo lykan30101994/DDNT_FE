@@ -62,7 +62,6 @@ const props = defineProps<{
   fieldTable: { [key: string]: string }
 }>()
 
-
 const showModal = ref(false)
 const toggleModal = () => {
   showModal.value = !showModal.value
