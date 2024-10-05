@@ -5,7 +5,7 @@ export interface IButton {
   type?: string
   label: string
   disabled?: boolean
-  key: string
+  key?: string
   size?: string
   btnClass?: string
   isBold?: boolean

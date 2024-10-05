@@ -81,3 +81,17 @@
   border-collapse: collapse;
   word-wrap: break-word;
 }
+
+.input-page {
+  padding: 0.36rem 1rem;
+  margin-left: -10px;
+  outline: none;
+  text-align: end;
+  border: 1px solid slategray;
+  border-radius: 5px;
+}
+
+.my-input-page {
+  display: flex;
+  align-items: center;
+}
