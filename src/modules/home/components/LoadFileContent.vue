@@ -602,13 +602,16 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
     const dataMaxlength = item?.max_length?.data_check
+    // TODO
+    const link = 'http://localhost:5173/home' // get value from varible url_storage
+    const max_step = 3 // caculator max step (maybe = count item required - 1)
 
     if (!item.required.is_checked) {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateRequired(element),
         translations.value.descriptionRequired(element),
-        translations.value.testStepRequired(element, actionElement),
+        translations.value.testStepRequired(element, actionElement, link, max_step),
         translations.value.expectedResultRequired(element)
       ])
       increaseIndexTC()
@@ -619,7 +622,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateMaxLength(element, valueMaxlength),
         translations.value.descriptionMaxlength(element),
-        translations.value.testStepMaxlenght(element, actionElement, dataMaxlength),
+        translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, link, max_step),
         translations.value.expectedResultMaxLength(valueMaxlength)
       ])
 
@@ -634,7 +637,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
           `TC${String(indexTC.value).padStart(5, '0')}`,
           translations.value.validateFormat(element, valueFormat),
           translations.value.descriptionFormat(element, valueFormat),
-          translations.value.testStepFormat(element, dataFormat, actionElement),
+          translations.value.testStepFormat(element, dataFormat, actionElement, link, max_step),
           translations.value.expectedResultFormat(valueFormat)
         ])
 
