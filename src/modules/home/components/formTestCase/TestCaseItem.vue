@@ -12,7 +12,28 @@
               class="w-100 form-control"
             />
           </td>
-          <td width="300px">* TEST DESCRIPTION</td>
+          <td
+            width="300px"
+            class="text-start"
+          >
+            * PURPOSE
+          </td>
+        </tr>
+        <tr class="align-center">
+          <td width="100px"></td>
+          <td colspan="2">
+            <input
+              v-model="pattentTestCase.description"
+              type="text"
+              class="w-100 form-control"
+            />
+          </td>
+          <td
+            width="300px"
+            class="text-start"
+          >
+            * DESCRIPTION
+          </td>
         </tr>
         <tr class="align-center">
           <td width="100px"></td>
@@ -23,7 +44,12 @@
               class="w-100 form-control"
             />
           </td>
-          <td width="300px">* EXPECTED RESULT</td>
+          <td
+            width="300px"
+            class="text-start"
+          >
+            * EXPECTED RESULT
+          </td>
         </tr>
         <tr
           v-for="(item, index) of data"

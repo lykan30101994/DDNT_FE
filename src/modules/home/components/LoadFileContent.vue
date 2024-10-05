@@ -311,16 +311,18 @@ const renderValidationFromExcel = (row: any, output: any, categoryCurrent: strin
 
   if (isValidateMaxlength(row[PURPOSE])) {
     const splitStep = row[TEST_STEP]?.split('\n')
+    const indexData = splitStep?.length - 2
     isCheckMaxlength = false
     valueMaxLength = getValueByRegex(row[PURPOSE])
-    dataCheckMaxLength = getDataCheck(splitStep[0] || '')
+    dataCheckMaxLength = getDataCheck(splitStep[indexData] || '')
   }
 
   if (isValidateFormat(row[PURPOSE])) {
     const splitStep = row[TEST_STEP]?.split('\n')
+    const indexData = splitStep?.length - 2
     isCheckFormat = false
     valueFormat = getValueByRegex(row[PURPOSE])
-    dataCheckFormat = getDataCheck(splitStep[0] || '')
+    dataCheckFormat = getDataCheck(splitStep[indexData] || '')
   }
 
   if (!isCheckRequired || !isCheckMaxlength || !isCheckFormat) {
@@ -479,7 +481,7 @@ const autoFillData = () => {
   for (const category in pattents) {
     const normalFirst = pattents[category][NORMAL]?.[0]
     pattents[category][ABNORMAL]?.forEach((item: ITestCaseItem) => {
-      const { action, action_element, expected_result, test_description, ...input } = item
+      const { action, action_element, expected_result, test_description, description, ...input } = item
       const keyMissing = getKeyRequiredMising(Object.keys(input), category)
 
       keyMissing.forEach((key) => {
@@ -536,13 +538,13 @@ const handleExportTestCase = () => {
 const converTestCase = (pattents: IPattentLocalStorage) => {
   const arrTestCase = {} as IPattentLocalStorage
   for (const category in pattents) {
-    arrTestCase[category] = convertTestCaseByCategory(pattents[category])
+    arrTestCase[category] = convertTestCaseByCategory(pattents[category], category)
   }
 
   return arrTestCase
 }
 
-const convertTestCaseByCategory = (pattentsCategory: any) => {
+const convertTestCaseByCategory = (pattentsCategory: any, category: string = '') => {
   const objTestcase = {} as IPattentLocalStorage
 
   for (const key in pattentsCategory) {
@@ -551,7 +553,7 @@ const convertTestCaseByCategory = (pattentsCategory: any) => {
         return renderTestCaseNormal(item)
       })
     } else {
-      objTestcase[key] = renderTestCaseValidation(pattentsCategory[key])
+      objTestcase[key] = renderTestCaseValidation(pattentsCategory[key], category)
     }
   }
 
@@ -559,7 +561,7 @@ const convertTestCaseByCategory = (pattentsCategory: any) => {
 }
 
 const renderTestCaseNormal = (input: any) => {
-  const { test_description, expected_result, action, action_element, ...inputs } = input
+  const { test_description, description, expected_result, action, action_element, ...inputs } = input
   const no = `TC${String(indexTC.value).padStart(5, '0')}`
   let stepCounter = 1
   let testSteps = ''
@@ -574,7 +576,7 @@ const renderTestCaseNormal = (input: any) => {
   stepCounter++
   increaseIndexTC()
 
-  return [no, test_description, '', testSteps.trim(), expected_result]
+  return [no, test_description?.trim(), description?.trim(), testSteps?.trim(), expected_result]
 }
 
 const increaseIndexTC = () => {
@@ -593,7 +595,7 @@ const setDataFromLocalStorage = () => {
   }
 }
 
-const renderTestCaseValidation = (inputData: any): string[][] => {
+const renderTestCaseValidation = (inputData: any, category: string): string[][] => {
   const validation: string[][] = []
 
   inputData?.forEach((item: any) => {
@@ -607,7 +609,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateRequired(element),
         '',
-        translations.value.testStepRequired(element, actionElement),
+        autoFillTestStepValidate(REQUIRED, item, category),
         translations.value.expectedResultRequired(element)
       ])
       increaseIndexTC()
@@ -618,7 +620,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateMaxLength(element, valueMaxlength),
         '',
-        translations.value.testStepMaxlenght(element, actionElement, dataMaxlength),
+        autoFillTestStepValidate(MAXLENGTH, item, category),
         translations.value.expectedResultMaxLength(valueMaxlength)
       ])
 
@@ -633,7 +635,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
           `TC${String(indexTC.value).padStart(5, '0')}`,
           translations.value.validateFormat(element, valueFormat),
           '',
-          translations.value.testStepFormat(element, dataFormat, actionElement),
+          autoFillTestStepValidate(FORMAT, item, category, dataFormat),
           translations.value.expectedResultFormat(valueFormat)
         ])
 
@@ -642,6 +644,33 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
     })
   })
   return validation
+}
+
+const autoFillTestStepValidate = (type: string, item: any, category: string, dataFormat: string = '') => {
+  const pattents = pattentLocalStorage.get()
+  let testStep = ''
+  let stepIndex = 1
+
+  const element = item.title.trim()
+  const actionElement = item.action_element
+  const dataMaxlength = item?.max_length?.data_check
+  const keyMissing = getKeyRequiredMising([element], category)
+
+  const normalFirst = pattents[category][NORMAL]?.[0]
+
+  keyMissing?.forEach((key: string) => {
+    testStep += translations.value.testStepCommon(stepIndex++, key, normalFirst[key])
+  })
+
+  if (type === REQUIRED) {
+    testStep += translations.value.testStepRequired(element, actionElement, stepIndex)
+  } else if (type === MAXLENGTH) {
+    testStep += translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, stepIndex)
+  } else if (type === FORMAT) {
+    testStep += translations.value.testStepFormat(element, dataFormat, actionElement, stepIndex)
+  }
+
+  return testStep
 }
 
 const changeLanguage = (lang: string) => {
