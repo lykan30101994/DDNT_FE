@@ -1,74 +1,160 @@
 <template>
   <div class="d-flex justify-content-end">
     <div class="col-md-4 me-1">
-      <label
-        for="validationDefault01"
-        class="form-label"
-        >VALUE</label
-      >
+      <label for="validationDefault01" class="form-label">VALUE</label>
       <select
         v-model="validateForm.value"
         id="dropdown"
         class="form-control"
         :disabled="arrChecked"
       >
-        <option
-          v-for="option in options"
-          :key="option.value"
-          :value="option.value"
-        >
+        <option v-for="option in options" :key="option.value" :value="option.value">
           {{ option.text }}
         </option>
       </select>
     </div>
     <div class="col-md-6">
-      <label
-        for="validationDefault02"
-        class="form-label"
-        >DATA CHECK</label
-      >
+      <label for="validationDefault02" class="form-label">DATA CHECK</label>
       <input
         v-model="validateForm.data_check"
         type="text"
         class="form-control"
         id="validationDefault02"
         :disabled="arrChecked"
+        @blur="validateInput"
       />
+      <span v-if="errorMessage" class="text-danger">{{ errorMessage }}</span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
 const props = defineProps<{
-  index: number
-  arrChecked: boolean
-}>()
+  index: number;
+  arrChecked: boolean;
+}>();
 
 const validateForm = defineModel<ICommonValidate>({
-  default: {} as ICommonValidate
-})
+  default: {} as ICommonValidate,
+});
 
 const options = ref([
-  { value: '', text: '' },
-  { value: 'email', text: 'Email' },
-  { value: 'phone', text: 'Phone Numbers' },
-  { value: 'fullwidth_number', text: 'Fullwidth Numbers' },
-  { value: 'fullwidth_alphabet', text: 'Fullwidth Alphabet Characters' },
-  { value: 'fullwidth_katakana', text: 'Fullwidth Katakana' },
-  { value: 'fullwidth_hiragana', text: 'Fullwidth Hiragana' },
-  { value: 'halfwidth_number', text: 'Haftwidth Numbers' },
-  { value: 'halfwidth_alphabet', text: 'Haftwidth Alphabet Characters' },
-  { value: 'halfwidth _katakana', text: 'Haftwidth Katakana' },
-  { value: 'falfwidth _hiragana', text: 'Haftwidth Hiragana' },
-  { value: 'fullwidth_halfwidth', text: 'Fullwidth/ Halfwidth Symbol' },
-  { value: 'special_characters', text: 'Special Characters' },
-  { value: 'yyyy/mm/dd hh:mm:ss', text: 'Incorrect date format (YYYY/MM/DD hh:mm:ss)' },
-  { value: 'yyyy/mm/dd', text: 'Incorrect date format (YYYY/MM/DD)' },
-  { value: 'yyyy/mm', text: 'Incorrect date format (YYYY/MM)' },
-  { value: 'mm/dd', text: 'Incorrect date format (MM/DD)' },
-  { value: 'past_date', text: 'Past Date' },
-  { value: 'non_leap_years', text: 'The date for non-leap years.' }
-])
+  { value: "", text: "" },
+  { value: "email", text: "Email" },
+  { value: "phone", text: "Phone Numbers" },
+  { value: "fullwidth_number", text: "Fullwidth Numbers" },
+  { value: "fullwidth_alphabet", text: "Fullwidth Alphabet Characters" },
+  { value: "fullwidth_katakana", text: "Fullwidth Katakana" },
+  { value: "fullwidth_hiragana", text: "Fullwidth Hiragana" },
+  { value: "halfwidth_number", text: "Halfwidth Numbers" },
+  { value: "halfwidth_alphabet", text: "Halfwidth Alphabet Characters" },
+  { value: "halfwidth_katakana", text: "Halfwidth Katakana" },
+  { value: "fullwidth_halfwidth", text: "Fullwidth/ Halfwidth Symbol" },
+  { value: "special_characters", text: "Special Characters" },
+  { value: "yyyy/mm/dd hh:mm:ss", text: "Incorrect date format (YYYY/MM/DD hh:mm:ss)" },
+  { value: "yyyy/mm/dd", text: "Incorrect date format (YYYY/MM/DD)" },
+  { value: "yyyy/mm", text: "Incorrect date format (YYYY/MM)" },
+  { value: "mm/dd", text: "Incorrect date format (MM/DD)" },
+  { value: "past_date", text: "Past Date" },
+  { value: "non_leap_years", text: "The date for non-leap years." },
+]);
+
+const errorMessage = ref<string | null>(null);
+
+const validateInput = () => {
+  errorMessage.value = null;
+  const data_check = validateForm.value.data_check;
+  const { value } = validateForm.value;
+
+  switch (value) {
+    case "email":
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data_check)) {
+        errorMessage.value = "Địa chỉ email không hợp lệ.";
+      }
+      break;
+
+    case "phone":
+      const phoneRegex = /^\+?[0-9\s\-]{7,15}$/;
+      if (!phoneRegex.test(data_check)) {
+        errorMessage.value = "Số điện thoại không hợp lệ.";
+      }
+      break;
+
+    case "fullwidth_number":
+      const fullwidthNumberRegex = /^[０-９]+$/;
+      if (!fullwidthNumberRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận số fullwidth.";
+      }
+      break;
+
+    case "fullwidth_alphabet":
+      const fullwidthAlphabetRegex = /^[Ａ-Ｚａ-ｚ]+$/;
+      if (!fullwidthAlphabetRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận chữ cái fullwidth.";
+      }
+      break;
+
+    case "fullwidth_katakana":
+      const fullwidthKatakanaRegex = /^[ァ-ヶ]+$/;
+      if (!fullwidthKatakanaRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận katakana fullwidth.";
+      }
+      break;
+
+    case "fullwidth_hiragana":
+      const fullwidthHiraganaRegex = /^[ぁ-ん]+$/;
+      if (!fullwidthHiraganaRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận hiragana fullwidth.";
+      }
+      break;
+
+    case "halfwidth_number":
+      const halfwidthNumberRegex = /^[0-9]+$/;
+      if (!halfwidthNumberRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận số halfwidth.";
+      }
+      break;
+
+    case "halfwidth_alphabet":
+      const halfwidthAlphabetRegex = /^[A-Za-z]+$/;
+      if (!halfwidthAlphabetRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận chữ halfwidth.";
+      }
+      break;
+
+    case "halfwidth_katakana":
+      const halfwidthKatakanaRegex = /^[ｦ-ﾝ]+$/;
+      if (!halfwidthKatakanaRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận katakana halfwidth.";
+      }
+      break;
+
+    case "yyyy/mm/dd hh:mm:ss":
+      const halfwidthDateTimeRegex = /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/;
+      if (!halfwidthDateTimeRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận format yyyy/mm/dd hh:mm:ss.";
+      }
+      break;
+
+    case "special_characters":
+      const specialCharactersRegex = /^[!@#$%^&*(),.?":{}|<>]+$/;
+      if (!specialCharactersRegex.test(data_check)) {
+        errorMessage.value = "Chỉ chấp nhận ký tự đặc biệt.";
+      }
+      break;
+
+    default:
+      errorMessage.value = "Vui lòng chọn định dạng.";
+      break;
+  }
+};
 </script>
+
+<style scoped>
+.text-danger {
+  color: red;
+}
+</style>
