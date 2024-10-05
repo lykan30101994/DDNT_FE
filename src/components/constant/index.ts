@@ -15,6 +15,7 @@ export const CONSTANTS = {
   COLUMN_EXCEL: {
     FIRST: 'A',
     PURPOSE: 'E',
+    DESCRIPTION: 'N',
     TEST_STEP: 'AC',
     EXPECT_RESULT: 'AM'
   },

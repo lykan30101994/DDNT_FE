@@ -18,6 +18,17 @@
           <td width="100px"></td>
           <td colspan="2">
             <input
+              v-model="pattentTestCase.description"
+              type="text"
+              class="w-100 form-control"
+            />
+          </td>
+          <td width="300px">* DESCRIPTION</td>
+        </tr>
+        <tr class="align-center">
+          <td width="100px"></td>
+          <td colspan="2">
+            <input
               v-model="pattentTestCase.expected_result"
               type="text"
               class="w-100 form-control"

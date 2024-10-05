@@ -75,7 +75,7 @@ import { useExcel } from '@/components/utils/excel-utils'
 import { Template } from '@/components/template/template'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
-const { FIRST, PURPOSE, TEST_STEP, EXPECT_RESULT } = CONSTANTS.COLUMN_EXCEL
+const { FIRST, PURPOSE, DESCRIPTION, TEST_STEP, EXPECT_RESULT } = CONSTANTS.COLUMN_EXCEL
 const { REQUIRED, FORMAT, MAXLENGTH } = CONSTANTS.KEY_VALIDATION
 const { REGEX } = CONSTANTS
 const keyNormal = [ABNORMAL, NORMAL]
@@ -385,6 +385,7 @@ const renderPattentFromExcel = (row: any, output: any, categoryCurrent: string, 
 
   let objectPattent = {
     test_description: row[PURPOSE],
+    description: row[DESCRIPTION],
     expected_result: row[EXPECT_RESULT]
   }
 
@@ -479,7 +480,7 @@ const autoFillData = () => {
   for (const category in pattents) {
     const normalFirst = pattents[category][NORMAL]?.[0]
     pattents[category][ABNORMAL]?.forEach((item: ITestCaseItem) => {
-      const { action, action_element, expected_result, test_description, ...input } = item
+      const { action, action_element, expected_result, description, test_description, ...input } = item
       const keyMissing = getKeyRequiredMising(Object.keys(input), category)
 
       keyMissing.forEach((key) => {
@@ -559,7 +560,7 @@ const convertTestCaseByCategory = (pattentsCategory: any) => {
 }
 
 const renderTestCaseNormal = (input: any) => {
-  const { test_description, expected_result, action, action_element, ...inputs } = input
+  const { test_description, description, expected_result, action, action_element, ...inputs } = input
   const no = `TC${String(indexTC.value).padStart(5, '0')}`
   let stepCounter = 1
   let testSteps = ''
@@ -574,7 +575,7 @@ const renderTestCaseNormal = (input: any) => {
   stepCounter++
   increaseIndexTC()
 
-  return [no, test_description, '', testSteps.trim(), expected_result]
+  return [no, test_description, description, testSteps.trim(), expected_result]
 }
 
 const increaseIndexTC = () => {
@@ -606,7 +607,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateRequired(element),
-        '',
+        translations.value.descriptionRequired(element),
         translations.value.testStepRequired(element, actionElement),
         translations.value.expectedResultRequired(element)
       ])
@@ -617,7 +618,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateMaxLength(element, valueMaxlength),
-        '',
+        translations.value.descriptionMaxlength(element),
         translations.value.testStepMaxlenght(element, actionElement, dataMaxlength),
         translations.value.expectedResultMaxLength(valueMaxlength)
       ])
@@ -632,7 +633,7 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
         validation.push([
           `TC${String(indexTC.value).padStart(5, '0')}`,
           translations.value.validateFormat(element, valueFormat),
-          '',
+          translations.value.descriptionFormat(element, valueFormat),
           translations.value.testStepFormat(element, dataFormat, actionElement),
           translations.value.expectedResultFormat(valueFormat)
         ])
