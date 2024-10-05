@@ -84,7 +84,7 @@ const file = ref<File | null>(null)
 const tableData = ref<string[][]>([])
 const selectedLanguage = ref<string | number | undefined>()
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
-const translations = ref(jp)
+const translations = ref(en)
 const indexTC = ref<number>(1)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 const dataEventLocalStorage = localStorageUtil(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
@@ -93,12 +93,12 @@ const { writeWithTemplate } = useExcel()
 
 const optionLanguage: IOption[] = [
   {
-    label: 'JP',
-    value: LANGUAGE.JP
-  },
-  {
     label: 'EN',
     value: LANGUAGE.EN
+  },
+  {
+    label: 'JP',
+    value: LANGUAGE.JP
   }
 ]
 const buttonFooters: IButton[] = [
