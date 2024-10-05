@@ -84,7 +84,7 @@
               v-if="onDataRequired(item)"
               class="text-required"
             >
-              Vui lòng nhập vào input
+              Please enter in the input.
             </p>
           </td>
           <td width="300px"></td>

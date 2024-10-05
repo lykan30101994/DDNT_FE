@@ -29,7 +29,7 @@
         type="text"
         class="form-control"
         :id="`dataCheckRequired${index}`"
-        :disabled="arrChecked.isRequiredChecked"
+        :disabled="true"
       />
     </div>
     <div class="col-md-2">
@@ -75,7 +75,13 @@
         class="form-control"
         :id="`dataCheckMaxLength${index}`"
         :disabled="arrChecked.isMaxLengthChecked"
+        @blur="validateMaxlengthOnBlur"
       />
+      <span
+        v-if="msgValidateMaxLength"
+        class="text-danger"
+        >{{ msgValidateMaxLength }}</span
+      >
     </div>
     <div class="col-md-2">
       <div class="form-check">
@@ -128,6 +134,8 @@ defineProps<{
 const validateForm = defineModel<IValidate>({
   default: {} as IValidate
 })
+
+const msgValidateMaxLength = ref<string | null>(null)
 
 const options = ref([
   { value: '', text: '' },
@@ -195,6 +203,19 @@ const setDefaultValue = (title: string, value: boolean) => {
 
 const handleAddCase = () => {
   validateForm.value.format.push({ is_checked: arrChecked.value.isFormatChecked } as ICommonValidate)
+}
+
+const validateMaxlengthOnBlur = () => {
+  if (validateMaxLength(valid.max_length.data_check, valid.max_length.value)) {
+    msgValidateMaxLength.value = 'Invalid format'
+  } else {
+    msgValidateMaxLength.value = null
+  }
+}
+
+const validateMaxLength = (data: string, value: string): boolean => {
+  const lengthOfData = data.length
+  return lengthOfData === 0 || Number(lengthOfData) <= Number(value)
 }
 </script>
 

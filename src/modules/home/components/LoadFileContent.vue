@@ -75,7 +75,7 @@ import { useExcel } from '@/components/utils/excel-utils'
 import { Template } from '@/components/template/template'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
-const { FIRST, PURPOSE, TEST_STEP, EXPECT_RESULT } = CONSTANTS.COLUMN_EXCEL
+const { FIRST, PURPOSE, DESCRIPTION, TEST_STEP, EXPECT_RESULT } = CONSTANTS.COLUMN_EXCEL
 const { REQUIRED, FORMAT, MAXLENGTH } = CONSTANTS.KEY_VALIDATION
 const { REGEX } = CONSTANTS
 const keyNormal = [ABNORMAL, NORMAL]
@@ -84,7 +84,7 @@ const file = ref<File | null>(null)
 const tableData = ref<string[][]>([])
 const selectedLanguage = ref<string | number | undefined>()
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
-const translations = ref(jp)
+const translations = ref(en)
 const indexTC = ref<number>(1)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 const dataEventLocalStorage = localStorageUtil(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
@@ -93,12 +93,12 @@ const { writeWithTemplate } = useExcel()
 
 const optionLanguage: IOption[] = [
   {
-    label: 'JP',
-    value: LANGUAGE.JP
-  },
-  {
     label: 'EN',
     value: LANGUAGE.EN
+  },
+  {
+    label: 'JP',
+    value: LANGUAGE.JP
   }
 ]
 const buttonFooters: IButton[] = [
@@ -387,6 +387,7 @@ const renderPattentFromExcel = (row: any, output: any, categoryCurrent: string, 
 
   let objectPattent = {
     test_description: row[PURPOSE],
+    description: row[DESCRIPTION],
     expected_result: row[EXPECT_RESULT]
   }
 
@@ -481,7 +482,7 @@ const autoFillData = () => {
   for (const category in pattents) {
     const normalFirst = pattents[category][NORMAL]?.[0]
     pattents[category][ABNORMAL]?.forEach((item: ITestCaseItem) => {
-      const { action, action_element, expected_result, test_description, description, ...input } = item
+      const { action, action_element, expected_result, description, test_description, ...input } = item
       const keyMissing = getKeyRequiredMising(Object.keys(input), category)
 
       keyMissing.forEach((key) => {
@@ -603,13 +604,16 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
     const dataMaxlength = item?.max_length?.data_check
+    // TODO
+    const link = 'http://localhost:5173/home' // get value from varible url_storage
+    const max_step = 3 // caculator max step (maybe = count item required - 1)
 
     if (!item.required.is_checked) {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateRequired(element),
-        '',
-        autoFillTestStepValidate(REQUIRED, item, category),
+        translations.value.descriptionRequired(element),
+        translations.value.testStepRequired(element, actionElement, link, max_step),
         translations.value.expectedResultRequired(element)
       ])
       increaseIndexTC()
@@ -619,8 +623,8 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateMaxLength(element, valueMaxlength),
-        '',
-        autoFillTestStepValidate(MAXLENGTH, item, category),
+        translations.value.descriptionMaxlength(element),
+        translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, link, max_step),
         translations.value.expectedResultMaxLength(valueMaxlength)
       ])
 
@@ -634,8 +638,8 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
         validation.push([
           `TC${String(indexTC.value).padStart(5, '0')}`,
           translations.value.validateFormat(element, valueFormat),
-          '',
-          autoFillTestStepValidate(FORMAT, item, category, dataFormat),
+          translations.value.descriptionFormat(element, valueFormat),
+          translations.value.testStepFormat(element, dataFormat, actionElement, link, max_step),
           translations.value.expectedResultFormat(valueFormat)
         ])
 
@@ -662,13 +666,13 @@ const autoFillTestStepValidate = (type: string, item: any, category: string, dat
     testStep += translations.value.testStepCommon(stepIndex++, key, normalFirst[key])
   })
 
-  if (type === REQUIRED) {
-    testStep += translations.value.testStepRequired(element, actionElement, stepIndex)
-  } else if (type === MAXLENGTH) {
-    testStep += translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, stepIndex)
-  } else if (type === FORMAT) {
-    testStep += translations.value.testStepFormat(element, dataFormat, actionElement, stepIndex)
-  }
+  // if (type === REQUIRED) {
+  //   testStep += translations.value.testStepRequired(element, actionElement, stepIndex, 3)
+  // } else if (type === MAXLENGTH) {
+  //   testStep += translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, stepIndex, 3)
+  // } else if (type === FORMAT) {
+  //   testStep += translations.value.testStepFormat(element, dataFormat, actionElement, stepIndex, 3)
+  // }
 
   return testStep
 }
