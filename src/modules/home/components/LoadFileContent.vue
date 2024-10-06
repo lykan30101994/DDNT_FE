@@ -1,7 +1,46 @@
 <template>
   <CardWrapper>
     <div class="bg-white">
-      <div class="auto-resize align-items-center gap-3 mb-4">
+      <div class="auto-resize align-items-center gap-3">
+        <Label title="GO TO PAGE" />
+        <div class="flex-grow-1">
+          <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
+            <div class="flex-grow-1 position-relative">
+              <input
+                v-model="url"
+                type="text"
+                class="form-control"
+                id="link"
+                placeholder="Enter the URL you want to test"
+                @input="handleChangeURL"
+              />
+              <font-awesome-icon
+                id="icon-check"
+                class="tick-check"
+                :icon="faCircleCheck"
+              />
+            </div>
+            <div class="auto-resize justify-content-end gap-2">
+              <button
+                class="btn btn-outline-success fw-bold"
+                @click="handleSaveURL"
+              >
+                SAVE
+              </button>
+            </div>
+          </div>
+          <span
+            v-if="validationMessage"
+            class="text-danger"
+            >{{ validationMessage }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </CardWrapper>
+  <CardWrapper v-if="isShowContent">
+    <div class="bg-white">
+      <div class="auto-resize align-items-center gap-3">
         <Label title="EVENTS & ELEMENT FILE" />
         <div class="flex-grow-1">
           <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
@@ -36,46 +75,10 @@
           </div>
         </div>
       </div>
-      <div class="auto-resize align-items-center gap-3">
-        <Label title="GO TO PAGE" />
-        <div class="flex-grow-1">
-          <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
-            <div class="flex-grow-1 position-relative">
-              <input
-                v-model="url"
-                type="text"
-                class="form-control"
-                id="link"
-                placeholder="Enter your link"
-                @input="handleChangeURL"
-              />
-              <font-awesome-icon
-                id="icon-check"
-                class="tick-check"
-                :icon="faCircleCheck"
-              />
-            </div>
-            <div class="auto-resize justify-content-end gap-2">
-              <button
-                class="btn btn-secondary fw-bold"
-                @click="handleCheckPage"
-              >
-                CHECK PAGE
-              </button>
-              <button
-                class="btn btn-outline-success fw-bold"
-                @click="handleSaveURL"
-              >
-                SAVE
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </CardWrapper>
-  <Content :map-event="dataMapTable" />
-  <CardWrapper :is-fixed="true">
+  <Content v-if="isShowContent" :map-event="dataMapTable" />
+  <CardWrapper v-if="isShowContent" :is-fixed="true">
     <div class="d-flex group-item justify-content-end">
       <DropDown
         v-model="selectedLanguage"
@@ -130,6 +133,8 @@ const indexTC = ref<number>(1)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 const dataEventLocalStorage = localStorageUtil(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
 const urlStorage = localStorageUtil(CONSTANTS.KEY_STORAGE_URL)
+const validationMessage = ref('')
+const isShowContent = ref<boolean>(false);
 
 const { writeWithTemplate } = useExcel()
 
@@ -158,33 +163,8 @@ const contentEvents = computed(() => {
   return tableData.value.splice(1)
 })
 
-const handleCheckPage = () => {
-  const inputValue = document.getElementById('link') as HTMLInputElement
-  const url = getURL(inputValue.value)
-
-  if (url) {
-    const windowFeatures = 'width=800,height=600,menubar=no,resizable=yes,scrollbars=yes,status=no'
-    const newWindow = window.open(url, '_blank', windowFeatures)
-
-    if (newWindow) {
-      newWindow.focus()
-    } else {
-      alert('Please allow popups for this site')
-    }
-  }
-}
-
-const getURL = (link: string) => {
-  let url = ''
-
-  if (link) {
-    url = link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`
-  }
-
-  return url
-}
-
 const handleSaveURL = () => {
+  validateUrl()
   setIconCheckDisplay(true)
   const inputURL = document.getElementById('link') as HTMLInputElement
 
@@ -239,6 +219,17 @@ const setIconCheckDisplay = (show: boolean) => {
 
   if (iconCheck) {
     iconCheck.style.opacity = show ? '1' : '0'
+  }
+}
+
+const validateUrl = () => {
+  const urlPattern = /^(https?:\/\/)?(localhost|([a-zA-Z0-9-]+\.[a-zA-Z]{2,}))(:(\d{1,5}))?(\/[^\s]*)?$/
+  if (!url.value.match(urlPattern)) {
+    isShowContent.value = false
+    validationMessage.value = 'Invalid URL'
+  } else {
+    isShowContent.value = true
+    validationMessage.value = ''
   }
 }
 
@@ -650,8 +641,9 @@ const convertTestCaseByCategory = (pattentsCategory: any) => {
 const renderTestCaseNormal = (input: any) => {
   const { test_description, description, expected_result, action, action_element, ...inputs } = input
   const no = `TC${String(indexTC.value).padStart(5, '0')}`
-  let stepCounter = 1
-  let testSteps = ''
+  let stepCounter = 2
+  const link = urlStorage.get()
+  let testSteps = translations.value.testStepGotoCommon(link)
 
   for (const [key, value] of Object.entries(inputs)) {
     const itemName = key.split('::')?.[2] ?? ''
@@ -690,8 +682,9 @@ const renderTestCaseValidation = (inputData: any): string[][] => {
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
     const dataMaxlength = item?.max_length?.data_check
+    
+    const link = urlStorage.get()
     // TODO
-    const link = 'http://localhost:5173/home' // get value from varible url_storage
     const max_step = 3 // caculator max step (maybe = count item required - 1)
 
     if (!item.required.is_checked) {
@@ -752,6 +745,7 @@ const setURLFromStorage = () => {
 
   if (store && Object.keys(store).length > 0) {
     url.value = store
+    validateUrl()
     setIconCheckDisplay(true)
   }
 }
