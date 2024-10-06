@@ -1,36 +1,74 @@
 <template>
   <CardWrapper>
-    <div class="auto-resize align-items-center bg-white gap-3">
-      <Label title="EVENTS & ELEMENT FILE" />
-      <div class="flex-grow-1">
-        <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
-          <div class="flex-grow-1">
-            <input
-              type="file"
-              class="form-control"
-              id="fileUpload"
-              @change="handleFileChange"
-            />
+    <div class="bg-white">
+      <div class="auto-resize align-items-center gap-3 mb-4">
+        <Label title="EVENTS & ELEMENT FILE" />
+        <div class="flex-grow-1">
+          <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
+            <div class="flex-grow-1">
+              <input
+                type="file"
+                class="form-control"
+                id="fileUpload"
+                @change="handleFileChange"
+              />
+            </div>
+            <div class="auto-resize justify-content-end gap-2">
+              <button
+                class="btn btn-primary fw-bold"
+                @click="uploadFile"
+              >
+                CHOOSE FILE
+              </button>
+              <button
+                class="btn btn-success fw-bold"
+                @click="loadData"
+              >
+                LOAD
+              </button>
+              <button
+                class="btn btn-primary fw-bold"
+                @click="loadExcelToObject"
+              >
+                LOAD-EXCEL
+              </button>
+            </div>
           </div>
-          <div class="auto-resize justify-content-end gap-2">
-            <button
-              class="btn btn-primary fw-bold"
-              @click="uploadFile"
-            >
-              CHOOSE FILE
-            </button>
-            <button
-              class="btn btn-success fw-bold"
-              @click="loadData"
-            >
-              LOAD
-            </button>
-            <button
-              class="btn btn-primary fw-bold"
-              @click="loadExcelToObject"
-            >
-              LOAD-EXCEL
-            </button>
+        </div>
+      </div>
+      <div class="auto-resize align-items-center gap-3">
+        <Label title="GO TO PAGE" />
+        <div class="flex-grow-1">
+          <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
+            <div class="flex-grow-1 position-relative">
+              <input
+                v-model="url"
+                type="text"
+                class="form-control"
+                id="link"
+                placeholder="Enter your link"
+                @input="handleChangeURL"
+              />
+              <font-awesome-icon
+                id="icon-check"
+                class="tick-check"
+                :icon="faCircleCheck"
+              />
+            </div>
+            <div class="auto-resize justify-content-end gap-2">
+              <button
+                class="btn btn-secondary fw-bold"
+                @click="handleCheckPage"
+              >
+                CHECK PAGE
+              </button>
+              <button
+                class="btn btn-outline-success fw-bold"
+                @click="handleSaveURL"
+              >
+                SAVE
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -73,6 +111,8 @@ import type { IOption } from '@/components/common/dropdown/DropDown.type'
 import type { IObjectType, IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
 import { useExcel } from '@/components/utils/excel-utils'
 import { Template } from '@/components/template/template'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 const { FIRST, PURPOSE, DESCRIPTION, TEST_STEP, EXPECT_RESULT } = CONSTANTS.COLUMN_EXCEL
@@ -85,9 +125,11 @@ const tableData = ref<string[][]>([])
 const selectedLanguage = ref<string | number | undefined>()
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
 const translations = ref(en)
+const url = ref<string>('')
 const indexTC = ref<number>(1)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 const dataEventLocalStorage = localStorageUtil(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
+const urlStorage = localStorageUtil(CONSTANTS.KEY_STORAGE_URL)
 
 const { writeWithTemplate } = useExcel()
 
@@ -115,6 +157,39 @@ const buttonFooters: IButton[] = [
 const contentEvents = computed(() => {
   return tableData.value.splice(1)
 })
+
+const handleCheckPage = () => {
+  const inputValue = document.getElementById('link') as HTMLInputElement
+  const url = getURL(inputValue.value)
+
+  if (url) {
+    const windowFeatures = 'width=800,height=600,menubar=no,resizable=yes,scrollbars=yes,status=no'
+    const newWindow = window.open(url, '_blank', windowFeatures)
+
+    if (newWindow) {
+      newWindow.focus()
+    } else {
+      alert('Please allow popups for this site')
+    }
+  }
+}
+
+const getURL = (link: string) => {
+  let url = ''
+
+  if (link) {
+    url = link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`
+  }
+
+  return url
+}
+
+const handleSaveURL = () => {
+  setIconCheckDisplay(true)
+  const inputURL = document.getElementById('link') as HTMLInputElement
+
+  urlStorage.set(inputURL.value)
+}
 
 const resetData = () => {
   dataEventLocalStorage.remove()
@@ -148,9 +223,22 @@ const mapEvent = computed(() => {
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement
+
   if (target.files && target.files.length > 0) {
     file.value = target.files[0]
     resetData()
+  }
+}
+
+const handleChangeURL = () => {
+  setIconCheckDisplay(false)
+}
+
+const setIconCheckDisplay = (show: boolean) => {
+  const iconCheck = document.getElementById('icon-check')
+
+  if (iconCheck) {
+    iconCheck.style.opacity = show ? '1' : '0'
   }
 }
 
@@ -659,6 +747,15 @@ const changeLanguage = (lang: string) => {
   }
 }
 
+const setURLFromStorage = () => {
+  const store = urlStorage.get()
+
+  if (store && Object.keys(store).length > 0) {
+    url.value = store
+    setIconCheckDisplay(true)
+  }
+}
+
 watch(
   () => mapEvent.value,
   (newValue) => {
@@ -673,6 +770,7 @@ watch(
 
 onMounted(() => {
   setDataFromLocalStorage()
+  setURLFromStorage()
 })
 </script>
 
