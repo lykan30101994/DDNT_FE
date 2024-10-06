@@ -12,6 +12,7 @@ export const CONSTANTS = {
   KEY_PATTENT: 'pattents',
   KEY_CURRENT_FILE: 'current_file',
   KEY_LOCAL_STORAGE_DATA: 'data_event',
+  KEY_STORAGE_URL: 'url_storage',
   COLUMN_EXCEL: {
     FIRST: 'A',
     PURPOSE: 'E',

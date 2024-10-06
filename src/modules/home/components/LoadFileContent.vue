@@ -1,43 +1,84 @@
 <template>
   <CardWrapper>
-    <div class="auto-resize align-items-center bg-white gap-3">
-      <Label title="EVENTS & ELEMENT FILE" />
-      <div class="flex-grow-1">
-        <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
-          <div class="flex-grow-1">
-            <input
-              type="file"
-              class="form-control"
-              id="fileUpload"
-              @change="handleFileChange"
-            />
+    <div class="bg-white">
+      <div class="auto-resize align-items-center gap-3">
+        <Label title="GO TO PAGE" />
+        <div class="flex-grow-1">
+          <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
+            <div class="flex-grow-1 position-relative">
+              <input
+                v-model="url"
+                type="text"
+                class="form-control"
+                id="link"
+                placeholder="Enter the URL you want to test"
+                @input="handleChangeURL"
+              />
+              <font-awesome-icon
+                id="icon-check"
+                class="tick-check"
+                :icon="faCircleCheck"
+              />
+            </div>
+            <div class="auto-resize justify-content-end gap-2">
+              <button
+                class="btn btn-outline-success fw-bold"
+                @click="handleSaveURL"
+              >
+                SAVE
+              </button>
+            </div>
           </div>
-          <div class="auto-resize justify-content-end gap-2">
-            <button
-              class="btn btn-primary fw-bold"
-              @click="uploadFile"
-            >
-              CHOOSE FILE
-            </button>
-            <button
-              class="btn btn-success fw-bold"
-              @click="loadData"
-            >
-              LOAD
-            </button>
-            <button
-              class="btn btn-primary fw-bold"
-              @click="loadExcelToObject"
-            >
-              LOAD-EXCEL
-            </button>
+          <span
+            v-if="validationMessage"
+            class="text-danger"
+            >{{ validationMessage }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </CardWrapper>
+  <CardWrapper v-if="isShowContent">
+    <div class="bg-white">
+      <div class="auto-resize align-items-center gap-3">
+        <Label title="EVENTS & ELEMENT FILE" />
+        <div class="flex-grow-1">
+          <div class="auto-resize align-items-center flex-wrap justify-content-between gap-2">
+            <div class="flex-grow-1">
+              <input
+                type="file"
+                class="form-control"
+                id="fileUpload"
+                @change="handleFileChange"
+              />
+            </div>
+            <div class="auto-resize justify-content-end gap-2">
+              <button
+                class="btn btn-primary fw-bold"
+                @click="uploadFile"
+              >
+                CHOOSE FILE
+              </button>
+              <button
+                class="btn btn-success fw-bold"
+                @click="loadData"
+              >
+                LOAD
+              </button>
+              <button
+                class="btn btn-primary fw-bold"
+                @click="loadExcelToObject"
+              >
+                LOAD-EXCEL
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </CardWrapper>
-  <Content :map-event="dataMapTable" />
-  <CardWrapper :is-fixed="true">
+  <Content v-if="isShowContent" :map-event="dataMapTable" />
+  <CardWrapper v-if="isShowContent" :is-fixed="true">
     <div class="d-flex group-item justify-content-end">
       <DropDown
         v-model="selectedLanguage"
@@ -73,6 +114,8 @@ import type { IOption } from '@/components/common/dropdown/DropDown.type'
 import type { IObjectType, IPattentLocalStorage, ITableEvent } from '@/modules/home/home.type'
 import { useExcel } from '@/components/utils/excel-utils'
 import { Template } from '@/components/template/template'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 
 const { VALIDATTION, ABNORMAL, NORMAL } = CONSTANTS.TAB_PATTENT
 const { FIRST, PURPOSE, DESCRIPTION, TEST_STEP, EXPECT_RESULT } = CONSTANTS.COLUMN_EXCEL
@@ -85,9 +128,13 @@ const tableData = ref<string[][]>([])
 const selectedLanguage = ref<string | number | undefined>()
 const dataMapTable = ref<Map<string, ITableEvent[]>>(new Map())
 const translations = ref(en)
+const url = ref<string>('')
 const indexTC = ref<number>(1)
 const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 const dataEventLocalStorage = localStorageUtil(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
+const urlStorage = localStorageUtil(CONSTANTS.KEY_STORAGE_URL)
+const validationMessage = ref('')
+const isShowContent = ref<boolean>(false);
 
 const { writeWithTemplate } = useExcel()
 
@@ -115,6 +162,14 @@ const buttonFooters: IButton[] = [
 const contentEvents = computed(() => {
   return tableData.value.splice(1)
 })
+
+const handleSaveURL = () => {
+  validateUrl()
+  setIconCheckDisplay(true)
+  const inputURL = document.getElementById('link') as HTMLInputElement
+
+  urlStorage.set(inputURL.value)
+}
 
 const resetData = () => {
   dataEventLocalStorage.remove()
@@ -148,9 +203,33 @@ const mapEvent = computed(() => {
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement
+
   if (target.files && target.files.length > 0) {
     file.value = target.files[0]
     resetData()
+  }
+}
+
+const handleChangeURL = () => {
+  setIconCheckDisplay(false)
+}
+
+const setIconCheckDisplay = (show: boolean) => {
+  const iconCheck = document.getElementById('icon-check')
+
+  if (iconCheck) {
+    iconCheck.style.opacity = show ? '1' : '0'
+  }
+}
+
+const validateUrl = () => {
+  const urlPattern = /^(https?:\/\/)?(localhost|([a-zA-Z0-9-]+\.[a-zA-Z]{2,}))(:(\d{1,5}))?(\/[^\s]*)?$/
+  if (!url.value.match(urlPattern)) {
+    isShowContent.value = false
+    validationMessage.value = 'Invalid URL'
+  } else {
+    isShowContent.value = true
+    validationMessage.value = ''
   }
 }
 
@@ -564,8 +643,9 @@ const convertTestCaseByCategory = (pattentsCategory: any, category: string = '')
 const renderTestCaseNormal = (input: any) => {
   const { test_description, description, expected_result, action, action_element, ...inputs } = input
   const no = `TC${String(indexTC.value).padStart(5, '0')}`
-  let stepCounter = 1
-  let testSteps = ''
+  let stepCounter = 2
+  const link = urlStorage.get()
+  let testSteps = translations.value.testStepGotoCommon(link)
 
   for (const [key, value] of Object.entries(inputs)) {
     const itemName = key.split('::')?.[2] ?? ''
@@ -604,7 +684,7 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
     const dataMaxlength = item?.max_length?.data_check
-
+    
     if (!item.required.is_checked) {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
@@ -649,9 +729,9 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
 
 const autoFillTestStepValidate = (type: string, item: any, category: string, dataFormat: string = '') => {
   // TODO
-  const link = 'http://localhost:5173/home' // get value from varible url_storage
+  const link = urlStorage.get() // get value from varible url_storage
   const pattents = pattentLocalStorage.get()
-  let testStep = translations.value.testStepGotoPage(link)
+  let testStep = translations.value.testStepGotoCommon(link)
   let stepIndex = 2
 
   const element = item.title.trim()
@@ -687,6 +767,16 @@ const changeLanguage = (lang: string) => {
   }
 }
 
+const setURLFromStorage = () => {
+  const store = urlStorage.get()
+
+  if (store && Object.keys(store).length > 0) {
+    url.value = store
+    validateUrl()
+    setIconCheckDisplay(true)
+  }
+}
+
 watch(
   () => mapEvent.value,
   (newValue) => {
@@ -701,6 +791,7 @@ watch(
 
 onMounted(() => {
   setDataFromLocalStorage()
+  setURLFromStorage()
 })
 </script>
 

@@ -20,7 +20,7 @@ export default {
   testStepCommon: (step: number, item: string, data_check: string) =>
     `ステップ ${step}: [${item}]にのデータを入力: ${data_check} \n`,
   // TODO
-  testStepGotoPage: (link: string) => `STEP 1: Goto page ${link}\n`,
+  testStepGotoCommon: (link: string) => `STEP 1: Goto page ${link}\n`,
   testStepSubmit: (step: number, element: string) => `ステップ ${step}: [${element}] をクリック \n`,
   expectedResultRequired: (item: string) => `${item} は必須入力です`,
   expectedResultMaxLength: (value: string) => ` ${value} 文字以内で入力してください。`,
