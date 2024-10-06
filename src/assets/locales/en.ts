@@ -16,7 +16,7 @@ export default {
     `STEP ${step}: Enter [${item}]: ${data_check} \nSTEP ${++step}: Click [${event}]`,
   testStepFormat: (item: string, event: string, data_check: string, step: number = 1) =>
     `STEP ${step}: Enter [${item}]: ${data_check}\nSTEP ${++step}: Click [${event}]`,
-  testStepCommon: (step: number, item: string, data_check: string) => `STEP${step}: Enter [${item}]: ${data_check}\n`,
+  testStepCommon: (step: number, item: string, data_check: string) => `STEP ${step}: Enter [${item}]: ${data_check}\n`,
   testStepGotoPage: (link: string) => `STEP 1: Goto page ${link}\n`,
   testStepSubmit: (step: number, element: string) => `STEP ${step}: Click [${element}]\n`,
   expectedResultRequired: (item: string) => `Field ${item} is required`,

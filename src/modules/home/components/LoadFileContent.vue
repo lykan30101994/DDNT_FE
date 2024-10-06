@@ -604,16 +604,13 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
     const dataMaxlength = item?.max_length?.data_check
-    // TODO
-    const link = 'http://localhost:5173/home' // get value from varible url_storage
-    const max_step = 3 // caculator max step (maybe = count item required - 1)
 
     if (!item.required.is_checked) {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateRequired(element),
         translations.value.descriptionRequired(element),
-        translations.value.testStepRequired(element, actionElement, link, max_step),
+        autoFillTestStepValidate(REQUIRED, item, category),
         translations.value.expectedResultRequired(element)
       ])
       increaseIndexTC()
@@ -624,7 +621,7 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
         `TC${String(indexTC.value).padStart(5, '0')}`,
         translations.value.validateMaxLength(element, valueMaxlength),
         translations.value.descriptionMaxlength(element),
-        translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, link, max_step),
+        autoFillTestStepValidate(MAXLENGTH, item, category),
         translations.value.expectedResultMaxLength(valueMaxlength)
       ])
 
@@ -639,7 +636,7 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
           `TC${String(indexTC.value).padStart(5, '0')}`,
           translations.value.validateFormat(element, valueFormat),
           translations.value.descriptionFormat(element, valueFormat),
-          translations.value.testStepFormat(element, dataFormat, actionElement, link, max_step),
+          autoFillTestStepValidate(FORMAT, item, category, dataFormat),
           translations.value.expectedResultFormat(valueFormat)
         ])
 
@@ -651,9 +648,11 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
 }
 
 const autoFillTestStepValidate = (type: string, item: any, category: string, dataFormat: string = '') => {
+  // TODO
+  const link = 'http://localhost:5173/home' // get value from varible url_storage
   const pattents = pattentLocalStorage.get()
-  let testStep = ''
-  let stepIndex = 1
+  let testStep = translations.value.testStepGotoPage(link)
+  let stepIndex = 2
 
   const element = item.title.trim()
   const actionElement = item.action_element
@@ -666,13 +665,13 @@ const autoFillTestStepValidate = (type: string, item: any, category: string, dat
     testStep += translations.value.testStepCommon(stepIndex++, key, normalFirst[key])
   })
 
-  // if (type === REQUIRED) {
-  //   testStep += translations.value.testStepRequired(element, actionElement, stepIndex, 3)
-  // } else if (type === MAXLENGTH) {
-  //   testStep += translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, stepIndex, 3)
-  // } else if (type === FORMAT) {
-  //   testStep += translations.value.testStepFormat(element, dataFormat, actionElement, stepIndex, 3)
-  // }
+  if (type === REQUIRED) {
+    testStep += translations.value.testStepRequired(element, actionElement, stepIndex)
+  } else if (type === MAXLENGTH) {
+    testStep += translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, stepIndex)
+  } else if (type === FORMAT) {
+    testStep += translations.value.testStepFormat(element, actionElement, dataFormat, stepIndex)
+  }
 
   return testStep
 }
