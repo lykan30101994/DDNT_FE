@@ -67,14 +67,11 @@ const options = ref([
   { value: 'halfwidth_number', text: 'Halfwidth Numbers' },
   { value: 'halfwidth_alphabet', text: 'Halfwidth Alphabet Characters' },
   { value: 'halfwidth_katakana', text: 'Halfwidth Katakana' },
-  { value: 'fullwidth_halfwidth', text: 'Fullwidth/ Halfwidth Symbol' },
   { value: 'special_characters', text: 'Special Characters' },
   { value: 'yyyy/mm/dd hh:mm:ss', text: 'Incorrect date format (YYYY/MM/DD hh:mm:ss)' },
   { value: 'yyyy/mm/dd', text: 'Incorrect date format (YYYY/MM/DD)' },
   { value: 'yyyy/mm', text: 'Incorrect date format (YYYY/MM)' },
-  { value: 'mm/dd', text: 'Incorrect date format (MM/DD)' },
-  { value: 'past_date', text: 'Past Date' },
-  { value: 'non_leap_years', text: 'The date for non-leap years.' }
+  { value: 'mm/dd', text: 'Incorrect date format (MM/DD)' }
 ])
 
 const errorMessage = ref<string | null>(null)
@@ -153,6 +150,26 @@ const validateInput = () => {
         /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/
       if (halfwidthDateTimeRegex.test(data_check)) {
         errorMessage.value = 'Invalid format check data yyyy/mm/dd hh:mm:ss'
+      }
+      break
+    case 'yyyy/mm/dd':
+      const yearMonthDateRegex = /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/
+      if (yearMonthDateRegex.test(data_check)) {
+        errorMessage.value = 'Invalid format check data yyyy/mm/dd'
+      }
+      break
+
+    case 'yyyy/mm':
+      const yearMonthRegex = /^(19|20)\d{2}\/(0[1-9]|1[0-2])$/
+      if (yearMonthRegex.test(data_check)) {
+        errorMessage.value = 'Invalid format check data yyyy/mm'
+      }
+      break
+
+    case 'mm/dd':
+      const monthDateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/
+      if (monthDateRegex.test(data_check)) {
+        errorMessage.value = 'Invalid format check data mm/dd'
       }
       break
 

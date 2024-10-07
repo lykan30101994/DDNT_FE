@@ -149,14 +149,11 @@ const options = ref([
   { value: 'halfwidth_alphabet', text: 'Haftwidth Alphabet Characters' },
   { value: 'halfwidth _katakana', text: 'Haftwidth Katakana' },
   { value: 'falfwidth _hiragana', text: 'Haftwidth Hiragana' },
-  { value: 'fullwidth_halfwidth', text: 'Fullwidth/ Halfwidth Symbol' },
   { value: 'special_characters', text: 'Special Characters' },
   { value: 'yyyy/mm/dd hh:mm:ss', text: 'Incorrect date format (YYYY/MM/DD hh:mm:ss)' },
   { value: 'yyyy/mm/dd', text: 'Incorrect date format (YYYY/MM/DD)' },
   { value: 'yyyy/mm', text: 'Incorrect date format (YYYY/MM)' },
-  { value: 'mm/dd', text: 'Incorrect date format (MM/DD)' },
-  { value: 'past_date', text: 'Past Date' },
-  { value: 'non_leap_years', text: 'The date for non-leap years.' }
+  { value: 'mm/dd', text: 'Incorrect date format (MM/DD)' }
 ])
 
 const valid = validateForm.value

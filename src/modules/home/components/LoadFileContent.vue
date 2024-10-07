@@ -77,8 +77,14 @@
       </div>
     </div>
   </CardWrapper>
-  <Content v-if="isShowContent" :map-event="dataMapTable" />
-  <CardWrapper v-if="isShowContent" :is-fixed="true">
+  <Content
+    v-if="isShowContent"
+    :map-event="dataMapTable"
+  />
+  <CardWrapper
+    v-if="isShowContent"
+    :is-fixed="true"
+  >
     <div class="d-flex group-item justify-content-end">
       <DropDown
         v-model="selectedLanguage"
@@ -134,7 +140,7 @@ const pattentLocalStorage = localStorageUtil(CONSTANTS.KEY_PATTENT)
 const dataEventLocalStorage = localStorageUtil(CONSTANTS.KEY_LOCAL_STORAGE_DATA)
 const urlStorage = localStorageUtil(CONSTANTS.KEY_STORAGE_URL)
 const validationMessage = ref('')
-const isShowContent = ref<boolean>(false);
+const isShowContent = ref<boolean>(false)
 
 const { writeWithTemplate } = useExcel()
 
@@ -684,7 +690,7 @@ const renderTestCaseValidation = (inputData: any, category: string): string[][] 
     const actionElement = item.action_element
     const valueMaxlength = item?.max_length?.value
     const dataMaxlength = item?.max_length?.data_check
-    
+
     if (!item.required.is_checked) {
       validation.push([
         `TC${String(indexTC.value).padStart(5, '0')}`,
@@ -750,7 +756,7 @@ const autoFillTestStepValidate = (type: string, item: any, category: string, dat
   } else if (type === MAXLENGTH) {
     testStep += translations.value.testStepMaxlenght(element, actionElement, dataMaxlength, stepIndex)
   } else if (type === FORMAT) {
-    testStep += translations.value.testStepFormat(element, actionElement, dataFormat, stepIndex)
+    testStep += translations.value.testStepFormat(element, dataFormat, actionElement, stepIndex)
   }
 
   return testStep
